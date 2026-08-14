@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.derluke.monitor-workspaces",
+  "name": "Monitor Workspace Dots",
+  "version": "1.0.0",
+  "author": "Lukas Innig",
+  "license": "MIT",
+  "description": "Five clean workspace dots scoped independently to each monitor.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Monitor Workspace Dots",
+    "description": "Five workspace dots for each monitor",
+    "category": "Compositor",
+    "allowMultiple": false,
+    "defaultSection": "left"
+  }
+}
