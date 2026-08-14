@@ -7,7 +7,7 @@ import qs.Ui
 
 BarWidget {
   id: root
-  moduleName: "io.github.derluke.monitor-workspaces"
+  moduleName: "io.github.derluke.dual-monitor-workspaces"
 
   readonly property int dotCount: Math.max(1, Number(root.setting("count", 5)))
   readonly property string screenName: root.QsWindow.window && root.QsWindow.window.screen
