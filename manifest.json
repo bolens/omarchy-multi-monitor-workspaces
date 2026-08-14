@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.derluke.dual-monitor-workspaces",
   "name": "Dual Monitor Workspaces",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Lukas Innig",
   "license": "MIT",
   "description": "Independent workspace banks, navigation, and indicators for dual-monitor Omarchy.",

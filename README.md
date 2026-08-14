@@ -4,6 +4,8 @@ A complete dual-monitor workspace pattern for Omarchy Quattro: two independent
 five-workspace banks, predictable keyboard navigation, safe cross-monitor
 window movement, and workspace indicators scoped to each screen.
 
+![Dual-monitor workspace banks shown as five dots on each Omarchy bar](preview.png)
+
 The included bar widget is the visual part of the setup. It shows five dots on
 each monitor; the focused workspace is bright, occupied workspaces are muted,
 and empty persistent workspaces are dim. Clicking a dot activates that
