@@ -6,6 +6,12 @@ for(const asset of ["styles.css","site.js","favicon.svg","preview.png"]) assert.
 for(const term of ["1 → 100 monitors","Atomic topology","per-workspace glyph","Race-safe persistence"]) assert.match(html,new RegExp(term,"i"))
 assert.match(html,/\{\{VERSION\}\}/); assert.match(html,/class="skip"/); assert.match(css,/prefers-reduced-motion/)
 assert.match(css,/#55e6dd/i); assert.match(css,/#ff775f/i)
+const channel=v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4}
+const luminance=hex=>{const rgb=hex.match(/[\da-f]{2}/gi).map(v=>channel(parseInt(v,16)));return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2]}
+const contrast=(a,b)=>(Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05)
+const installKicker=[...css.matchAll(/\.install \.kicker\{color:#([\da-f]{6})/gi)].at(-1)?.[1]
+const coral=css.match(/--coral:#([\da-f]{6})/i)?.[1]
+assert.ok(installKicker&&coral&&contrast(installKicker,coral)>=4.5,"install kicker must meet WCAG AA contrast")
 const image=fs.readFileSync("preview.png"); assert.equal(image.subarray(1,4).toString(),"PNG")
 assert.equal((html.match(/<h1/g)||[]).length,1); assert.equal((html.match(/data-copy/g)||[]).length,1)
 console.log("Multi-Monitor Workspaces Pages structure passed")

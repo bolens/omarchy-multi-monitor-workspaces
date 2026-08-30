@@ -63,4 +63,4 @@ jobs:
           server=$!
           trap 'kill "$server" 2>/dev/null || true' EXIT
           npx lighthouse http://127.0.0.1:4173/ --only-categories=accessibility --chrome-flags="--headless --no-sandbox" --output=json --output-path=/tmp/lighthouse.json
-          node -e 'const r=require("/tmp/lighthouse.json"); process.exit(r.categories.accessibility.score>=.95?0:1)'
+          node -e 'const r=require("/tmp/lighthouse.json"); process.exit(r.categories.accessibility.score===1?0:1)'
