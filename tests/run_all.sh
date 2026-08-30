@@ -2,9 +2,11 @@
 set -euo pipefail
 plugin_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$plugin_dir"
+quickshell_bin=${QUICKSHELL_BIN:-$(command -v quickshell || command -v qs || true)}
 
 persistent_shell_inventory() {
-  quickshell list --all 2>/dev/null | awk '
+  [[ -n $quickshell_bin ]] || return 0
+  "$quickshell_bin" list --all 2>/dev/null | awk '
     /^Process ID:/ { pid=$3 }
     /^Config path:/ {
       sub(/^[[:space:]]+/, "")
