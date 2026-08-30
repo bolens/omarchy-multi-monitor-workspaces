@@ -5,13 +5,6 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Added
-
-- Add a distinct, accessible GitHub Pages user guide covering monitor-bank
-  allocation, hotplug behavior, appearance, IPC, and installation.
-- Add pinned CI, release automation, governance documents, and repository
-  validation for the maintained hard fork.
-
 ## [2.2.2] - 2026-08-30
 
 ### Added
@@ -20,6 +13,14 @@ project follows [Semantic Versioning](https://semver.org/).
   settings, guarded IPC, and compact monitor-aware settings.
 - Add pure, randomized, real-QML, topology, persistence-race, and live stress
   coverage through the full bounded monitor-bank range.
+- Add a distinct GitHub Pages guide for allocation, hotplug behavior,
+  appearance, IPC, and installation.
+- Add pinned CI, release automation, governance documents, and repository
+  validation for the maintained hard fork.
+- Add reversible multi-monitor visual capture for number, hybrid, glyph, and
+  settings layouts.
+- Add supported-release and weekly upstream Omarchy compatibility checks.
+- Add release artifact attestations and a 1.00 accessibility gate.
 
 ### Changed
 

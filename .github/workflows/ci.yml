@@ -11,7 +11,7 @@ permissions: {}
 
 jobs:
   validate:
-    name: Plugin and repository
+    name: Plugin
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -19,13 +19,19 @@ jobs:
     steps:
       - name: Check out plugin
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Check out Omarchy validator and QML imports
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: basecamp/omarchy
+          ref: 13f18b2cb7286fb54f87daf571a031aa6af3d8f0 # v4.0.1
           path: .omarchy
+          persist-credentials: false
       - name: Install archive validation tools
-        run: sudo apt-get update && sudo apt-get install --yes jq
+        run: sudo apt-get update && sudo apt-get install --yes jq shellcheck
+      - name: Check shell scripts
+        run: shellcheck scripts/*.sh scripts/deploy-shell-runtime scripts/verify-live scripts/verify-stress tests/run_all.sh tests/run_qml_runtime.sh
       - name: Validate distributable plugin
         run: |
           mkdir "$RUNNER_TEMP/plugin"
@@ -43,13 +49,26 @@ jobs:
             archlinux@sha256:4bf33b21a715aac0b48ce6e9eaed4782a898eae96f88f5da3635572129c2584a \
             bash -lc 'pacman -Syu --noconfirm nodejs npm quickshell qt6-declarative >/dev/null && QMLLINT=/usr/lib/qt6/bin/qmllint OMARCHY_PATH=/workspace/.omarchy OMARCHY_SKIP_VALIDATE=1 MMW_QML_TESTS=never npm test'
   pages:
-    name: Pages and accessibility
+    name: Repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
+      checks: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Lint workflows
+        uses: reviewdog/action-actionlint@dbe5299849118fd6f099ba563d263d770955a64a # v1.73.2
+        with:
+          reporter: github-check
+          fail_level: error
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.19.0
+          cache: npm
       - run: sudo apt-get update && sudo apt-get install --yes libxml2-utils tidy
       - run: npm ci
       - run: npm run build:site && npm run test:site
@@ -57,6 +76,16 @@ jobs:
           tidy -errors -quiet docs/index.html docs/404.html 2>&1 | tee /tmp/tidy.log || true
           if grep -q 'Error:' /tmp/tidy.log; then exit 1; fi
           xmllint --noout docs/favicon.svg docs/sitemap.xml
+      - name: Check documentation links
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --no-progress
+            --accept 200,204,206,429
+            --exclude '^https://github\.com/bolens/omarchy-multi-monitor-workspaces/(compare|releases/tag)/'
+            './**/*.md'
+            './docs/**/*.html'
+          fail: true
       - name: Audit accessibility
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 --directory _site >/tmp/site.log 2>&1 &

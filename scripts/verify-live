@@ -3,7 +3,8 @@ set -euo pipefail
 shell_pid=""
 while read -r candidate; do
   [[ $candidate =~ ^[1-9][0-9]*$ ]] || continue
-  if [[ $(qs ipc --pid "$candidate" call shell ping 2>/dev/null || true) == ok ]] && qs ipc --pid "$candidate" call multi-monitor-workspaces status >/dev/null 2>&1; then shell_pid=$candidate; break; fi
+  probe=$(qs ipc --pid "$candidate" call multi-monitor-workspaces status 2>/dev/null || true)
+  if jq -e '.ipcVersion == 1 and (.monitors | type == "array")' <<<"$probe" >/dev/null 2>&1; then shell_pid=$candidate; break; fi
 done < <(qs list --all | awk '/Process ID:/{print $3}')
 [[ -n $shell_pid ]] || { printf 'No IPC-ready Multi-Monitor Workspaces shell found.\n' >&2; exit 1; }
 call() { qs ipc --pid "$shell_pid" call multi-monitor-workspaces "$@"; }

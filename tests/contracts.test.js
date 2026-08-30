@@ -4,6 +4,7 @@ const path = require("node:path")
 const root = path.join(__dirname, "..")
 const read = file => fs.readFileSync(path.join(root, file), "utf8")
 const service = read("Service.qml"), widget = read("BarWidget.qml"), settings = read("SettingsPanel.qml"), model = read("Model.js")
+const capture = read("scripts/capture-screenshots"), live = read("scripts/verify-live")
 for (const [name, source] of [["Service",service],["BarWidget",widget]])
   assert.doesNotMatch(source, /\bProcess\s*\{|execDetached|quickshell\s+--|\bqs\s+/, `${name} must not launch subprocesses or shells`)
 assert.match(service, /target:\s*"multi-monitor-workspaces"/)
@@ -48,4 +49,18 @@ assert.match(settings, /implicitHeight:\s*Style\.space\(560\)/, "settings geomet
 assert.match(settings, /workspaceIdsFor\(modelData\)\[0\]/, "monitor editors must display the effective bank after priority and collision resolution")
 assert.match(settings, /function setWorkspaceGlyph\(workspaceId, value\)/, "settings must update one global workspace glyph without replacing its peers")
 assert.match(settings, /model:root\.controller\.bankWorkspaceIds/, "glyph editors must target the panel monitor's global workspace bank")
+for (const [name, source] of [["capture",capture],["live verifier",live]]) {
+  assert.match(source,/probe=.*multi-monitor-workspaces status/,
+    `${name} must inspect the candidate response instead of trusting qs exit status`)
+  assert.match(source,/\.ipcVersion == 1/,
+    `${name} must reject unrelated Quickshell IPC processes`)
+}
+assert.match(capture,/local status=\$\?/,
+  "capture cleanup must preserve the failing command status")
+assert.match(capture,/hl\.dsp\.focus\(\{ workspace/,
+  "capture must use an empty workspace instead of retaining private window content")
+assert.match(capture,/hl\.dsp\.focus\(\{ monitor/,
+  "capture must restore the selected and previously focused monitor")
+assert.match(capture,/grim -o "\$monitor"/,
+  "settings evidence must include the complete monitor-height panel")
 console.log("Multi-monitor workspace QML and IPC contracts passed")

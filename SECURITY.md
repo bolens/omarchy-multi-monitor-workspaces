@@ -20,4 +20,5 @@ public issue.
 - Confirm release archives contain `LICENSE` and `NOTICE` and exclude tests,
   workflows, local caches, and maintainer scripts.
 - Run the complete validation suite and inspect dependency-action updates.
+- Verify the GitHub artifact attestation for the release archive.
 - Confirm IPC bounds, workspace-ID quoting, and settings persistence guards.

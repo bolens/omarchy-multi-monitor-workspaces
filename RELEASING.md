@@ -11,8 +11,15 @@ Releases use Semantic Versioning and annotated `vX.Y.Z` tags on `main`.
    [TESTING.md](TESTING.md) on an Omarchy workstation.
 5. Open a pull request and require CI to pass before merging.
 6. Tag the validated `main` commit as `vX.Y.Z`. The release workflow verifies
-   the tag/version match and publishes a checksummed source archive.
+   the tag and publishes a checksummed, provenance-attested source archive.
 
 Never move a published tag. Fix a broken release forward with a new patch
 version. Verify the archive retains `manifest.json`, `README.md`, `LICENSE`,
 `NOTICE`, and `preview.png` and excludes maintainer-only files.
+
+Verify the published provenance after the workflow finishes:
+
+```sh
+gh attestation verify "omarchy-multi-monitor-workspaces-$version.tar.gz" \
+  --repo bolens/omarchy-multi-monitor-workspaces
+```

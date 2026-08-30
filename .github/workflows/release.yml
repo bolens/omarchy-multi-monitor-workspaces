@@ -17,15 +17,27 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Verify tag, build archive, and publish
-        env:
-          GH_TOKEN: ${{ github.token }}
+        with:
+          persist-credentials: false
+      - name: Verify tag and build archive
         run: |
           version=$(jq -r .version manifest.json)
           test "$GITHUB_REF_NAME" = "v$version"
           archive="omarchy-multi-monitor-workspaces-$version.tar.gz"
           git archive --prefix="omarchy-multi-monitor-workspaces-$version/" -o "$archive" HEAD
           sha256sum "$archive" > "$archive.sha256"
+      - name: Attest release archive
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v4.2.2
+        with:
+          subject-path: "*.tar.gz"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(jq -r .version manifest.json)
+          archive="omarchy-multi-monitor-workspaces-$version.tar.gz"
           gh release create "$GITHUB_REF_NAME" "$archive" "$archive.sha256" --generate-notes --verify-tag

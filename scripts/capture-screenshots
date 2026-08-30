@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  printf 'Usage: %s [--monitor NAME] [--workspace ID] (--verify | --audit-dir DIR) [--report FILE]\n' "${0##*/}"
+}
+
+monitor=""
+capture_workspace=""
+audit_dir=""
+report=""
+verify=false
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --monitor) [[ $# -ge 2 ]] || { usage >&2; exit 2; }; monitor=$2; shift 2 ;;
+    --workspace) [[ $# -ge 2 ]] || { usage >&2; exit 2; }; capture_workspace=$2; shift 2 ;;
+    --audit-dir) [[ $# -ge 2 ]] || { usage >&2; exit 2; }; audit_dir=$2; shift 2 ;;
+    --report) [[ $# -ge 2 ]] || { usage >&2; exit 2; }; report=$2; shift 2 ;;
+    --verify) verify=true; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage >&2; exit 2 ;;
+  esac
+done
+[[ $verify == true || -n $audit_dir ]] || { usage >&2; exit 2; }
+[[ $verify != true || -z $audit_dir ]] || { printf '%s\n' '--verify and --audit-dir cannot be combined.' >&2; exit 2; }
+[[ -z $capture_workspace || $capture_workspace =~ ^[1-9][0-9]*$ ]] || { printf '%s\n' '--workspace must be a positive integer.' >&2; exit 2; }
+
+for command in grim hyprctl jq qs; do
+  command -v "$command" >/dev/null || { printf 'Missing command: %s\n' "$command" >&2; exit 1; }
+done
+
+if [[ $verify == true ]]; then
+  output_dir=$(mktemp -d /tmp/mmw-capture.XXXXXX)
+  remove_output=true
+else
+  [[ $audit_dir == /tmp/* ]] || { printf '%s\n' '--audit-dir must be below /tmp.' >&2; exit 2; }
+  mkdir -p "$audit_dir"
+  [[ -z $(find "$audit_dir" -mindepth 1 -maxdepth 1 -print -quit) ]] || { printf 'Audit directory is not empty: %s\n' "$audit_dir" >&2; exit 2; }
+  output_dir=$audit_dir
+  remove_output=false
+fi
+
+exec 9>/tmp/omarchy-mmw-capture.lock
+flock -n 9 || { printf '%s\n' 'Another Workspaces capture is running.' >&2; exit 1; }
+
+shell_pid=""
+while read -r candidate; do
+  probe=$(qs ipc --pid "$candidate" call multi-monitor-workspaces status 2>/dev/null || true)
+  if jq -e '.ipcVersion == 1 and (.monitors | type == "array")' <<<"$probe" >/dev/null 2>&1; then
+    shell_pid=$candidate
+    break
+  fi
+done < <(qs list --all | awk '/Process ID:/{print $3}')
+[[ -n $shell_pid ]] || { printf '%s\n' 'No IPC-ready Workspaces shell found.' >&2; exit 1; }
+call() { qs ipc --pid "$shell_pid" call multi-monitor-workspaces "$@"; }
+
+initial_status=$(call status)
+initial_settings=$(jq -c '.settings' <<<"$initial_status")
+initial_inventory=$(qs list --all | awk '/Process ID:|Config path:/{sub(/^[[:space:]]+/,"");print}' | sort)
+monitors=$(call registeredMonitors)
+if [[ -z $monitor ]]; then monitor=$(jq -r '.[0] // ""' <<<"$monitors"); fi
+jq -e --arg monitor "$monitor" 'index($monitor) != null' <<<"$monitors" >/dev/null ||
+  { printf 'Workspaces is not registered on %s.\n' "$monitor" >&2; exit 1; }
+[[ $monitor =~ ^[A-Za-z0-9._:-]+$ ]] || { printf 'Unsafe monitor name: %s\n' "$monitor" >&2; exit 1; }
+selected_monitor=$(hyprctl monitors -j | jq -c --arg monitor "$monitor" '.[]|select(.name==$monitor)')
+initial_workspace=$(jq -r '.activeWorkspace.id' <<<"$selected_monitor")
+initial_focused_monitor=$(hyprctl monitors -j | jq -r '.[]|select(.focused)|.name')
+workspace_snapshot=$(hyprctl workspaces -j)
+if [[ -z $capture_workspace ]]; then
+  capture_workspace=$(jq -r --arg monitor "$monitor" --argjson initial "$initial_workspace" '[.[]|select(.monitor==$monitor and .windows==0 and .id>0 and .id!=$initial)|.id]|sort|.[0] // empty' <<<"$workspace_snapshot")
+fi
+[[ -n $capture_workspace ]] || { printf 'No empty workspace is available on %s.\n' "$monitor" >&2; exit 1; }
+jq -e --arg monitor "$monitor" --argjson workspace "$capture_workspace" 'any(.[];.id==$workspace and .monitor==$monitor and .windows==0)' <<<"$workspace_snapshot" >/dev/null ||
+  { printf 'Capture workspace %s is not empty on %s.\n' "$capture_workspace" "$monitor" >&2; exit 1; }
+
+initial_open_monitor=""
+workspace_switched=false
+while read -r candidate; do
+  panel=$(call settingsStatusFor "$candidate")
+  if [[ $(jq -r '.open' <<<"$panel") == true ]]; then initial_open_monitor=$candidate; break; fi
+done < <(jq -r '.[]' <<<"$monitors")
+
+restore() {
+  call closeSettings >/dev/null 2>&1 || true
+  call setSettings "$initial_settings" >/dev/null 2>&1 || true
+  for _attempt in {1..80}; do
+    [[ $(call status | jq -r '.pending') == false ]] && break
+    sleep 0.03
+  done
+  if [[ $workspace_switched == true ]]; then
+    hyprctl dispatch "hl.dsp.focus({ monitor = \"$monitor\" })" >/dev/null 2>&1 || true
+    hyprctl dispatch "hl.dsp.focus({ workspace = \"$initial_workspace\" })" >/dev/null 2>&1 || true
+    [[ -z $initial_focused_monitor ]] || hyprctl dispatch "hl.dsp.focus({ monitor = \"$initial_focused_monitor\" })" >/dev/null 2>&1 || true
+    workspace_switched=false
+  fi
+  [[ -z $initial_open_monitor ]] || call openMonitorSettings "$initial_open_monitor" >/dev/null 2>&1 || true
+}
+cleanup() {
+  local status=$?
+  trap - EXIT INT TERM
+  set +e
+  restore
+  if [[ $remove_output == true ]]; then rm -r "$output_dir"; fi
+  exit "$status"
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+workspace_switched=true
+hyprctl dispatch "hl.dsp.focus({ monitor = \"$monitor\" })" >/dev/null
+hyprctl dispatch "hl.dsp.focus({ workspace = \"$capture_workspace\" })" >/dev/null
+
+wait_for_commit() {
+  for _attempt in {1..80}; do
+    [[ $(call status | jq -r '.pending') == false ]] && return 0
+    sleep 0.03
+  done
+  printf '%s\n' 'Workspaces settings did not commit.' >&2
+  return 1
+}
+geometry_for() {
+  hyprctl monitors -j | jq -r --arg monitor "$1" '.[]|select(.name==$monitor)|"\(.x),\(.y) \(.width)x64"'
+}
+capture_bars() {
+  local label=$1 screen geometry
+  while read -r screen; do
+    geometry=$(geometry_for "$screen")
+    [[ -n $geometry ]] || { printf 'Monitor disappeared during capture: %s\n' "$screen" >&2; return 1; }
+    grim -g "$geometry" "$output_dir/$label-$screen.png"
+  done < <(jq -r '.[]' <<<"$monitors")
+}
+wait_for_scroll() {
+  local position=$1 status
+  for _attempt in {1..60}; do
+    status=$(call settingsStatusFor "$monitor")
+    if [[ $position == top ]] && jq -e '.scrollY <= 1' <<<"$status" >/dev/null; then return 0; fi
+    if [[ $position == bottom ]] && jq -e '.scrollY >= (.scrollMaximum - 1)' <<<"$status" >/dev/null; then return 0; fi
+    sleep 0.03
+  done
+  printf 'Settings panel did not reach %s.\n' "$position" >&2
+  return 1
+}
+
+call closeSettings >/dev/null 2>&1 || true
+call setSettings '{"labelMode":"number"}' >/dev/null
+wait_for_commit
+capture_bars number
+call setSettings '{"labelMode":"hybrid"}' >/dev/null
+wait_for_commit
+capture_bars hybrid
+
+first_ids=$(call workspaceIds "$monitor")
+glyphs=$(jq -cn --argjson ids "$first_ids" '
+  ["󰊗","󰙯","󰝚","󰨞","󰖟","󰆍","󰎆","󰋊","󰏘","󰌢"] as $glyphs |
+  reduce range(0;($ids|length)) as $i ({}; .[($ids[$i]|tostring)]=$glyphs[$i % ($glyphs|length)])
+')
+call setSettings "$(jq -cn --argjson glyphs "$glyphs" '{labelMode:"glyph",workspaceGlyphs:$glyphs}')" >/dev/null
+wait_for_commit
+capture_bars glyph
+
+call openMonitorSettings "$monitor" >/dev/null
+for _attempt in {1..60}; do
+  panel=$(call settingsStatusFor "$monitor")
+  [[ $(jq -r '.open and .panelHeight > 0 and .contentHeight > 0' <<<"$panel") == true ]] && break
+  sleep 0.05
+done
+[[ $(jq -r '.open and .panelHeight > 0 and .contentHeight > 0' <<<"$panel") == true ]] ||
+  { printf '%s\n' 'Settings panel did not render.' >&2; exit 1; }
+call scrollSettingsFor "$monitor" top >/dev/null
+wait_for_scroll top
+grim -o "$monitor" "$output_dir/settings-top.png"
+call scrollSettingsFor "$monitor" bottom >/dev/null
+wait_for_scroll bottom
+grim -o "$monitor" "$output_dir/settings-bottom.png"
+
+restore
+after_inventory=$(qs list --all | awk '/Process ID:|Config path:/{sub(/^[[:space:]]+/,"");print}' | sort)
+[[ $after_inventory == "$initial_inventory" ]] || { printf '%s\n' 'Persistent Quickshell inventory changed during capture.' >&2; exit 1; }
+[[ $(call status | jq -c '.settings') == "$initial_settings" ]] || { printf '%s\n' 'Settings restoration failed.' >&2; exit 1; }
+
+if [[ -n $report ]]; then
+  jq -n --arg plugin multi-monitor-workspaces --arg monitor "$monitor" --arg output "$output_dir"     --argjson monitors "$monitors"     --argjson files "$(find "$output_dir" -maxdepth 1 -type f -printf '%f\n' | sort | jq -Rsc 'split("\n")[:-1]')"     '{plugin:$plugin,monitor:$monitor,monitors:$monitors,output:$output,files:$files,restored:true}' > "$report"
+fi
+printf 'Workspaces visual capture passed for %s monitor(s).\n' "$(jq length <<<"$monitors")"
