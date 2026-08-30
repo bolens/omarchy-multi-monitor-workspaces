@@ -9,7 +9,8 @@ node tests/contracts.test.js
 node tests/release.test.js
 node tests/site.test.js
 omarchy_path=${OMARCHY_PATH:-/home/panda/.local/share/omarchy-overlay}
-qmllint -I "$omarchy_path/shell" BarWidget.qml SettingsPanel.qml Service.qml
+qmllint_bin=${QMLLINT:-qmllint}
+"$qmllint_bin" -I "$omarchy_path/shell" BarWidget.qml SettingsPanel.qml Service.qml
 if [[ ${OMARCHY_SKIP_VALIDATE:-0} != 1 ]]; then omarchy plugin validate "$plugin_dir"; fi
 if [[ ${MMW_QML_TESTS:-auto} == always ]] || { [[ ${MMW_QML_TESTS:-auto} == auto ]] && [[ -S ${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/wayland-1 ]] && shell_pid=$(quickshell list --all 2>/dev/null | awk '/Process ID:/{pid=$3}/omarchy-overlay/{print pid}') && [[ -n $shell_pid ]] && [[ $(quickshell ipc --pid "$shell_pid" call shell ping 2>/dev/null || true) == ok ]]; }; then
   before=$(quickshell list --all 2>/dev/null | awk '/Process ID:|Config path:/{sub(/^[[:space:]]+/,"");print}' | sort)
