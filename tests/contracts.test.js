@@ -6,6 +6,13 @@ const read = file => fs.readFileSync(path.join(root, file), "utf8")
 const service = read("Service.qml"), widget = read("BarWidget.qml"), settings = read("SettingsPanel.qml"), model = read("Model.js")
 const capture = read("scripts/capture-screenshots"), live = read("scripts/verify-live")
 const qmlRuntimeRunner = read("tests/run_qml_runtime.sh")
+const testRunner = read("tests/run_all.sh")
+assert.match(qmlRuntimeRunner, /"\$quickshell_bin" list --all/,
+  "runtime leak detection must use the resolved quickshell or qs executable")
+assert.doesNotMatch(qmlRuntimeRunner, /(?:^|\n)\s*quickshell list --all/,
+  "runtime leak detection must not bypass the executable resolver")
+assert.match(testRunner, /"\$quickshell_bin" list --all/,
+  "persistent inventory must use the resolved quickshell or qs executable")
 for (const [name, source] of [["Service",service],["BarWidget",widget]])
   assert.doesNotMatch(source, /\bProcess\s*\{|execDetached|quickshell\s+--|\bqs\s+/, `${name} must not launch subprocesses or shells`)
 assert.match(service, /target:\s*"multi-monitor-workspaces"/)

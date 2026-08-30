@@ -8,7 +8,7 @@ active_harness=""
 cleanup() { if [[ -n $active_harness ]]; then "$quickshell_bin" kill --path "$active_harness" --any-display >/dev/null 2>&1 || true; fi; rm -rf -- "$runtime_dir"; }
 trap cleanup EXIT INT TERM
 leaked_runtime_processes() {
-  quickshell list --all 2>/dev/null | awk -v root="$runtime_dir/" '
+  "$quickshell_bin" list --all 2>/dev/null | awk -v root="$runtime_dir/" '
     /^Process ID:/ { pid=$3 }
     /^Config path:/ {
       sub(/^[[:space:]]+/, "")
