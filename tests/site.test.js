@@ -1,4 +1,5 @@
 const assert=require("node:assert/strict"),fs=require("node:fs")
+assert.ok(fs.statSync("scripts/build-site.sh").mode&0o100,"site builder must remain executable")
 const html=fs.readFileSync("docs/index.html","utf8"),css=fs.readFileSync("docs/styles.css","utf8")
 for(const id of ["main","model","features","settings","install"]) assert.ok(html.includes(`id="${id}"`),`missing section ${id}`)
 for(const asset of ["styles.css","site.js","favicon.svg","preview.png"]) assert.ok(html.includes(asset),`missing asset ${asset}`)
