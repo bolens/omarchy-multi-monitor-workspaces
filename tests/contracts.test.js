@@ -5,6 +5,7 @@ const root = path.join(__dirname, "..")
 const read = file => fs.readFileSync(path.join(root, file), "utf8")
 const service = read("Service.qml"), widget = read("BarWidget.qml"), settings = read("SettingsPanel.qml"), model = read("Model.js")
 const capture = read("scripts/capture-screenshots"), live = read("scripts/verify-live")
+const qmlRuntimeRunner = read("tests/run_qml_runtime.sh")
 for (const [name, source] of [["Service",service],["BarWidget",widget]])
   assert.doesNotMatch(source, /\bProcess\s*\{|execDetached|quickshell\s+--|\bqs\s+/, `${name} must not launch subprocesses or shells`)
 assert.match(service, /target:\s*"multi-monitor-workspaces"/)
@@ -49,6 +50,10 @@ assert.match(settings, /implicitHeight:\s*Style\.space\(560\)/, "settings geomet
 assert.match(settings, /workspaceIdsFor\(modelData\)\[0\]/, "monitor editors must display the effective bank after priority and collision resolution")
 assert.match(settings, /function setWorkspaceGlyph\(workspaceId, value\)/, "settings must update one global workspace glyph without replacing its peers")
 assert.match(settings, /model:root\.controller\.bankWorkspaceIds/, "glyph editors must target the panel monitor's global workspace bank")
+assert.match(qmlRuntimeRunner, /leaked_runtime_processes\(\)/,
+  "the isolated runtime runner must detect only its own leaked Quickshell harnesses")
+assert.match(qmlRuntimeRunner, /Leaked Quickshell runtime harnesses:/,
+  "the isolated runtime runner must fail with explicit leak evidence")
 for (const [name, source] of [["capture",capture],["live verifier",live]]) {
   assert.match(source,/probe=.*multi-monitor-workspaces status/,
     `${name} must inspect the candidate response instead of trusting qs exit status`)
