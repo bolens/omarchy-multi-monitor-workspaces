@@ -1,89 +1,57 @@
-# Dual Monitor Workspaces for Omarchy
+# Multi-Monitor Workspaces for Omarchy
 
-A complete dual-monitor workspace pattern for Omarchy Quattro: two independent
-five-workspace banks, predictable keyboard navigation, safe cross-monitor
-window movement, and workspace indicators scoped to each screen.
+A hard fork of `derluke/omarchy-dual-monitor-workspaces`, rebuilt for deterministic workspace banks on any number of monitors. It keeps the existing Omarchy bar UI while adding guarded settings persistence, per-monitor routing, appearance controls, wheel navigation, and a single service-owned IPC surface.
 
-![Dual-monitor workspace banks shown as five dots on each Omarchy bar](preview.png)
+[User guide](https://bolens.github.io/omarchy-multi-monitor-workspaces/) · [Report an issue](https://github.com/bolens/omarchy-multi-monitor-workspaces/issues/new/choose) · [Security policy](SECURITY.md)
 
-The included bar widget is the visual part of the setup. It shows five dots on
-each monitor; the focused workspace is bright, occupied workspaces are muted,
-and empty persistent workspaces are dim. Clicking a dot activates that
-monitor's corresponding Hyprland workspace.
+## Behavior
+
+- Each output receives a non-overlapping workspace bank (10 workspaces by default).
+- Explicit `monitorBanks` overrides win, then `monitorPriority`, then connected output names in alphabetical order. Duplicate overrides are deconflicted deterministically. Hyprland monitor IDs are deliberately not used because they can change across reconnects.
+- Monitor presentations register with one shared topology authority. Attach, detach, replacement, and reordered enumeration atomically recalculate non-overlapping banks from the monitors that actually have live bars; stale teardown cannot remove a replacement.
+- Label modes include local numbers, global IDs, state glyphs, and hybrid (active glyph, accent-colored occupied numbers, inactive empty numbers).
+- Left click follows the configured action; middle click moves silently; right click opens settings; the wheel navigates within the current monitor bank.
+- Empty workspaces remain visible by default, preserving persistent workspace access.
+
+The widget only reads Quickshell's Hyprland model and uses the existing bar command runner for workspace actions. It does not launch processes, shells, or extra Quickshell instances.
 
 ## Install
 
 ```sh
-omarchy plugin add https://github.com/derluke/omarchy-dual-monitor-workspaces.git --enable
+omarchy plugin add https://github.com/bolens/omarchy-multi-monitor-workspaces.git --enable
 omarchy plugin disable omarchy.workspaces
-omarchy bar move io.github.derluke.dual-monitor-workspaces --section left --after omarchy.menu
+omarchy bar move io.github.bolens.multi-monitor-workspaces --section left --after omarchy.menu
 ```
 
-This installs the per-screen indicator without editing Hyprland. Complete the
-workspace setup below to enable independent workspace banks and shortcuts.
+The local repository retains upstream history and its remote so a GitHub fork can be attached later. The active hard-fork identity is `io.github.bolens.multi-monitor-workspaces`.
 
-## Configure dual-monitor workspaces
+## Settings
 
-For five persistent workspaces per monitor, use the Lua version of
-[split-monitor-workspaces](https://github.com/zjeffer/split-monitor-workspaces).
-It requires Hyprland 0.55 or newer. Follow its release-branch guidance so the
-package version matches your installed Hyprland version.
+Right-click any workspace entry. The complete settings surface is scrollable and includes bank size and per-output bank overrides; label and click modes; empty-workspace, tooltip, and wheel behavior; plus glyphs, sizing, theme color roles, and opacity. Appearance also supports optional glyphs keyed by global workspace ID, allowing stable gaming, social, music, coding, or other themed workspaces while retaining state colors.
 
-An opt-in Omarchy example is included at
-[`examples/dual-monitor-workspaces.lua`](examples/dual-monitor-workspaces.lua).
-Review it, replace the monitor names, and append it to
-`~/.config/hypr/bindings.lua`. It configures:
+Settings are sanitized, bounded, losslessly coalesced for 75 ms, and persisted through Omarchy's inline-entry API. Failed writes retain their pending field intent while the persisted last-known-good entry remains unchanged. A queued write cannot resurrect a concurrently removed plugin entry; it retries against the latest entry only if one reappears. Revisions are anchored in `shell.json`, preventing stale monitor presentations from winning during hot reload or service reconstruction.
 
-- `Super+1..5`: first monitor workspace 1..5
-- `Super+Ctrl+1..5`: second monitor workspace 1..5
-- Add `Shift`: move the active window and follow it
-- Add `Shift+Alt`: move the active window silently
-- `Super+Tab` / `Super+Shift+Tab`: cycle within the focused monitor
-- `Super+Ctrl+Shift+Left/Right`: move a window to a connected adjacent monitor
+Persistence failures remain visible and keep service health degraded even if unrelated IPC succeeds. Same-screen widget replacement closes the displaced panel before the new presentation becomes authoritative.
 
-The directional move is guarded: it does nothing when no monitor exists in
-that direction.
+## IPC
 
-## Configure
-
-The default maximum is five dots. Change it inline in
-`~/.config/omarchy/shell.json` if desired:
-
-```json
-{
-  "id": "io.github.derluke.dual-monitor-workspaces",
-  "count": 5
-}
-```
-
-Persistent workspace rules are recommended so empty dots remain visible.
-
-## Remove
+The service target is `multi-monitor-workspaces`:
 
 ```sh
-omarchy plugin remove io.github.derluke.dual-monitor-workspaces
-omarchy plugin enable omarchy.workspaces --section left
+qs ipc call multi-monitor-workspaces status
+qs ipc call multi-monitor-workspaces registeredMonitors
+qs ipc call multi-monitor-workspaces workspaceIds DP-1
+qs ipc call multi-monitor-workspaces activate DP-1 4 focus
+qs ipc call multi-monitor-workspaces openMonitorAppearance DP-1
+qs ipc call multi-monitor-workspaces closeSettings
+qs ipc call multi-monitor-workspaces setSettings '{"count":10,"labelMode":"number"}'
+qs ipc call multi-monitor-workspaces resetSettings
 ```
 
-Removing the widget does not remove any separately installed Hyprland package
-or changes copied manually from the example.
+## Development and tests
 
-## Permissions and dependencies
+Run `npm test`, or `MMW_QML_TESTS=always npm test` to require live QML coverage. The suite covers pure model boundaries, malformed settings, deterministic mappings, migration idempotence, manifest/runtime contracts, QML behavior, registration generations, stale teardown, targeted settings, persistence, IPC, linting, validation, and persistent Quickshell inventory preservation. Deployed builds also provide `npm run verify:live` and the reversible `npm run verify:stress` live-runtime checks.
 
-The bar component runs inside `omarchy-shell`, reads Quickshell's Hyprland workspace
-model, and dispatches workspace activation when clicked. It executes no shell
-commands, makes no network requests, and requires no elevated privileges.
+## Credits and license
 
-Runtime requirements:
-
-- Omarchy 4 (Quattro)
-- The built-in Omarchy bar
-- Quickshell's Hyprland integration
-
-The external `split-monitor-workspaces` Lua package provides the independent
-persistent workspace banks. The indicator can run without it, but the complete
-dual-monitor behavior documented by this project requires it.
-
-## License
-
-MIT. This widget was derived from Omarchy's built-in workspace widget.
+This is a modified hard fork of [Omarchy Dual Monitor Workspaces](https://github.com/derluke/omarchy-dual-monitor-workspaces), originally created by Lukas Innig and derived from Omarchy's workspace widget by 37signals LLC. Hard-fork architecture and expanded behavior are by bolens. The upstream notices are preserved under the MIT license in [LICENSE](LICENSE); see [NOTICE](NOTICE) for provenance.

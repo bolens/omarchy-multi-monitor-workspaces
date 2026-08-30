@@ -1,0 +1,30 @@
+# Changelog
+
+All notable changes to Multi-Monitor Workspaces are documented here. The
+project follows [Semantic Versioning](https://semver.org/).
+
+## [Unreleased]
+
+### Added
+
+- Add a distinct, accessible GitHub Pages user guide covering monitor-bank
+  allocation, hotplug behavior, appearance, IPC, and installation.
+- Add pinned CI, release automation, governance documents, and repository
+  validation for the maintained hard fork.
+
+## [2.2.2] - 2026-08-30
+
+### Added
+
+- Add deterministic monitor-bank allocation, per-workspace glyphs, appearance
+  settings, guarded IPC, and compact monitor-aware settings.
+- Add pure, randomized, real-QML, topology, persistence-race, and live stress
+  coverage through the full bounded monitor-bank range.
+
+### Changed
+
+- Centralize settings, topology, allocation, and IPC ownership in one service.
+- Preserve the hybrid active-glyph and occupied/empty number presentation.
+
+[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.2...HEAD
+[2.2.2]: https://github.com/bolens/omarchy-multi-monitor-workspaces/releases/tag/v2.2.2

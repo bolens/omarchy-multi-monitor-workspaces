@@ -1,0 +1,42 @@
+name: Bug report
+description: Report reproducible workspace-widget behavior.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I updated the plugin and searched existing issues.
+          required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe actual and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Omarchy and plugin versions
+      placeholder: Omarchy …; Multi-Monitor Workspaces …
+    validations:
+      required: true
+  - type: input
+    id: monitors
+    attributes:
+      label: Connected output names
+      description: Include output names and orientations; omit serial numbers.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant redacted logs
+      render: shell

@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions: {}
+
+jobs:
+  validate:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+  release:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Verify tag, build archive, and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(jq -r .version manifest.json)
+          test "$GITHUB_REF_NAME" = "v$version"
+          archive="omarchy-multi-monitor-workspaces-$version.tar.gz"
+          git archive --prefix="omarchy-multi-monitor-workspaces-$version/" -o "$archive" HEAD
+          sha256sum "$archive" > "$archive.sha256"
+          gh release create "$GITHUB_REF_NAME" "$archive" "$archive.sha256" --generate-notes --verify-tag

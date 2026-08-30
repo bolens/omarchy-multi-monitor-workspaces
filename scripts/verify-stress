@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+shell_pid=""
+while read -r candidate; do
+  [[ $candidate =~ ^[1-9][0-9]*$ ]] || continue
+  if [[ $(qs ipc --pid "$candidate" call shell ping 2>/dev/null || true) == ok ]] \
+    && qs ipc --pid "$candidate" call multi-monitor-workspaces status >/dev/null 2>&1; then
+    shell_pid=$candidate
+    break
+  fi
+done < <(qs list --all | awk '/Process ID:/{print $3}')
+[[ -n $shell_pid ]] || { printf 'No IPC-ready Multi-Monitor Workspaces shell found.\n' >&2; exit 1; }
+
+call() { qs ipc --pid "$shell_pid" call multi-monitor-workspaces "$@"; }
+inventory() { qs list --all | awk '/Process ID:/{pid=$3}/Config path:/{print pid " " $3}' | sort -n; }
+
+original_status=$(call status)
+original_settings=$(jq -c '.settings' <<<"$original_status")
+before_inventory=$(inventory)
+restored=false
+cleanup() {
+  call closeSettings >/dev/null 2>&1 || true
+  if [[ $restored == false ]]; then
+    call setSettings "$original_settings" >/dev/null 2>&1 || true
+    sleep 1
+  fi
+}
+trap cleanup EXIT
+
+monitors=$(jq -c '.monitors' <<<"$original_status")
+[[ $(jq 'length' <<<"$monitors") -gt 0 ]] || { printf 'No registered monitors.\n' >&2; exit 1; }
+first_id=$(call workspaceIds "$(jq -r '.[0]' <<<"$monitors")" | jq '.[0]')
+test_settings=$(jq -cn --argjson id "$first_id" '{workspaceGlyphs:{($id|tostring):"★"}}')
+call setSettings "$test_settings" >/dev/null
+sleep 1
+[[ $(call status | jq -r --arg id "$first_id" '.healthy and .settings.workspaceGlyphs[($id|tostring)]=="★"') == true ]] \
+  || { printf 'Temporary glyph did not persist.\n' >&2; exit 1; }
+
+for cycle in $(seq 1 100); do
+  monitor=$(jq -r --argjson index "$(((cycle-1)%$(jq 'length' <<<"$monitors")))" '.[$index]' <<<"$monitors")
+  call openMonitorAppearance "$monitor" >/dev/null
+  call closeSettings >/dev/null
+done
+
+call setSettings "$original_settings" >/dev/null
+sleep 1
+restored=true
+final_status=$(call status)
+[[ $(jq -r '.healthy and (.pending|not)' <<<"$final_status") == true ]] \
+  || { printf 'Service unhealthy after stress: %s\n' "$final_status" >&2; exit 1; }
+[[ $(jq -c '.settings' <<<"$final_status") == "$original_settings" ]] \
+  || { printf 'Settings restoration mismatch.\n' >&2; exit 1; }
+[[ $(inventory) == "$before_inventory" && -d /proc/$shell_pid ]] \
+  || { printf 'Persistent Quickshell inventory changed.\n' >&2; exit 1; }
+
+printf 'Live glyph persistence and 100-cycle monitor routing passed; settings restored and shell PID %s remained stable.\n' "$shell_pid"

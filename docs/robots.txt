@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bolens.github.io/omarchy-multi-monitor-workspaces/sitemap.xml

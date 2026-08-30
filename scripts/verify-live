@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+shell_pid=""
+while read -r candidate; do
+  [[ $candidate =~ ^[1-9][0-9]*$ ]] || continue
+  if [[ $(qs ipc --pid "$candidate" call shell ping 2>/dev/null || true) == ok ]] && qs ipc --pid "$candidate" call multi-monitor-workspaces status >/dev/null 2>&1; then shell_pid=$candidate; break; fi
+done < <(qs list --all | awk '/Process ID:/{print $3}')
+[[ -n $shell_pid ]] || { printf 'No IPC-ready Multi-Monitor Workspaces shell found.\n' >&2; exit 1; }
+call() { qs ipc --pid "$shell_pid" call multi-monitor-workspaces "$@"; }
+status=$(call status)
+[[ $(jq -r '.healthy and .settingsVersion == 1 and .ipcVersion == 1 and .topologySerial >= 1 and (.monitors|length) > 0 and (.allocations|length)==(.monitors|length)' <<<"$status") == true ]] || { printf 'Unhealthy status: %s\n' "$status" >&2; exit 1; }
+monitors=$(call registeredMonitors)
+hyprland_monitors=$(hyprctl monitors -j | jq -c '[.[].name] | sort')
+[[ $(jq -c 'sort' <<<"$monitors") == "$hyprland_monitors" ]] || { printf 'Registered/Hyprland monitor mismatch: registered=%s hyprland=%s\n' "$monitors" "$hyprland_monitors" >&2; exit 1; }
+all_ids=""
+while read -r monitor; do
+  ids=$(call workspaceIds "$monitor")
+  [[ $(jq -r 'length > 0 and ([range(1;length) as $i | .[$i] == .[$i-1]+1] | all)' <<<"$ids") == true ]] || { printf 'Invalid bank for %s: %s\n' "$monitor" "$ids" >&2; exit 1; }
+  snapshot_ids=$(jq -c --arg monitor "$monitor" '.allocations[$monitor].workspaceIds' <<<"$status")
+  ipc_ids=$(jq -c . <<<"$ids")
+  [[ $snapshot_ids == "$ipc_ids" ]] || { printf 'Allocation snapshot mismatch for %s.\n' "$monitor" >&2; exit 1; }
+  all_ids+="$(jq -r '.[]' <<<"$ids")"$'\n'
+done < <(jq -r '.[]' <<<"$monitors")
+[[ $(sort -n <<<"$all_ids" | uniq -d | wc -l) -eq 0 ]] || { printf 'Monitor workspace banks overlap.\n' >&2; exit 1; }
+call openSettings >/dev/null
+target=$(jq -r '.[0]' <<<"$monitors")
+panel=$(call settingsStatusFor "$target")
+[[ $(jq -r '.open and .panelWidth > 0 and .panelHeight > 0 and .contentHeight > 0' <<<"$panel") == true ]] || { printf 'Settings panel failed: %s\n' "$panel" >&2; exit 1; }
+call scrollSettingsFor "$target" bottom >/dev/null
+call closeSettings >/dev/null
+printf 'Multi-Monitor Workspaces live verification passed for %s.\n' "$(jq -r 'join(", ")' <<<"$monitors")"

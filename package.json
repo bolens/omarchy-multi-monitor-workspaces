@@ -1,0 +1,14 @@
+{
+  "name": "omarchy-multi-monitor-workspaces",
+  "private": true,
+  "scripts": {
+    "test": "bash tests/run_all.sh",
+    "build:site": "bash scripts/build-site.sh",
+    "test:site": "node tests/site.test.js",
+    "verify:live": "bash scripts/verify-live",
+    "verify:stress": "bash scripts/verify-stress"
+  },
+  "devDependencies": {
+    "lighthouse": "13.4.1"
+  }
+}

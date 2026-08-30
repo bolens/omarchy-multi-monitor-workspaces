@@ -1,22 +1,57 @@
 {
   "schemaVersion": 1,
-  "id": "io.github.derluke.dual-monitor-workspaces",
-  "name": "Dual Monitor Workspaces",
-  "version": "1.0.1",
-  "author": "Lukas Innig",
+  "id": "io.github.bolens.multi-monitor-workspaces",
+  "name": "Multi-Monitor Workspaces",
+  "version": "2.2.2",
+  "author": "bolens",
   "license": "MIT",
-  "description": "Independent workspace banks, navigation, and indicators for dual-monitor Omarchy.",
-  "kinds": [
-    "bar-widget"
-  ],
+  "description": "Deterministic per-monitor workspace banks with configurable labels, appearance, navigation, settings, and IPC.",
+  "kinds": ["bar-widget", "service"],
+  "keepLoaded": true,
   "entryPoints": {
-    "barWidget": "BarWidget.qml"
+    "barWidget": "BarWidget.qml",
+    "service": "Service.qml"
   },
   "barWidget": {
-    "displayName": "Dual Monitor Workspaces",
-    "description": "Per-screen indicators for independent dual-monitor workspaces",
+    "displayName": "Per-Monitor Workspaces",
+    "description": "Per-screen indicators for independent workspace banks",
     "category": "Compositor",
     "allowMultiple": false,
-    "defaultSection": "left"
+    "defaultSection": "left",
+    "defaults": {
+      "count": 10,
+      "monitorPriority": [],
+      "monitorBanks": {},
+      "labelMode": "number",
+      "activeGlyph": "󱓻",
+      "occupiedGlyph": "●",
+      "emptyGlyph": "○",
+      "workspaceGlyphs": {},
+      "showEmpty": true,
+      "showTooltips": true,
+      "wrapScroll": true,
+      "clickAction": "focus",
+      "activeOpacity": 1,
+      "occupiedOpacity": 0.82,
+      "emptyOpacity": 0.45,
+      "buttonWidth": 20,
+      "horizontalMargin": 6,
+      "verticalPadding": 6,
+      "activeColorRole": "accent",
+      "occupiedColorRole": "foreground",
+      "emptyColorRole": "muted"
+    },
+    "schema": [
+      {"key":"count","type":"integer","label":"Workspaces per monitor","min":1,"max":20,"defaultValue":10},
+      {"key":"monitorPriority","type":"array","label":"Monitor priority","description":"Optional output names in explicit workspace-bank order. Unlisted outputs use stable alphabetical order.","defaultValue":[]},
+      {"key":"monitorBanks","type":"object","label":"Monitor bank overrides","description":"Optional output-name to zero-based bank mapping.","defaultValue":{}},
+      {"key":"labelMode","type":"enum","label":"Workspace labels","options":["number","hybrid","global","glyph"],"defaultValue":"number"},
+      {"key":"workspaceGlyphs","type":"object","label":"Workspace glyphs","description":"Optional glyph overrides keyed by global Hyprland workspace ID.","defaultValue":{}},
+      {"key":"showEmpty","type":"boolean","label":"Show empty workspaces","defaultValue":true},
+      {"key":"showTooltips","type":"boolean","label":"Show tooltips","defaultValue":true},
+      {"key":"wrapScroll","type":"boolean","label":"Wrap scroll navigation","defaultValue":true},
+      {"key":"clickAction","type":"enum","label":"Click action","options":["focus","move","move-silent"],"defaultValue":"focus"},
+      {"key":"buttonWidth","type":"integer","label":"Workspace width","min":12,"max":48,"defaultValue":20}
+    ]
   }
 }

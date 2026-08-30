@@ -1,0 +1,13 @@
+Multi-Monitor Workspaces
+
+This project is a modified hard fork of Omarchy Dual Monitor Workspaces:
+https://github.com/derluke/omarchy-dual-monitor-workspaces
+
+The original plugin was created by Lukas Innig and derives portions of the
+Omarchy workspace widget, whose copyright is held by 37signals LLC. Their
+copyright notices and the complete MIT license are preserved in LICENSE.
+
+The hard-fork identity, architecture, service, settings, IPC, tests, and later
+modifications are maintained by bolens. “Multi-Monitor Workspaces” and the
+io.github.bolens.multi-monitor-workspaces identifier distinguish this fork
+from upstream.

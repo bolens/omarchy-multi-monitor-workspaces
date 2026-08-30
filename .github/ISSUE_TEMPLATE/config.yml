@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Support and report routing
+    url: https://github.com/bolens/omarchy-multi-monitor-workspaces/blob/main/SUPPORT.md
+    about: Review troubleshooting and choose the appropriate report form.
+  - name: Private vulnerability report
+    url: https://github.com/bolens/omarchy-multi-monitor-workspaces/security/advisories/new
+    about: Report security-sensitive problems privately.
