@@ -6,6 +6,10 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   validate:
     uses: ./.github/workflows/ci.yml
@@ -14,7 +18,7 @@ jobs:
       checks: write
   release:
     needs: validate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: write
