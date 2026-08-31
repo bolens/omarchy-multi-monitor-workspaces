@@ -13,6 +13,7 @@ const capture = fs.existsSync("scripts/capture-screenshots")
   ? read("scripts/capture-screenshots")
   : ""
 const runner = read("tests/run_all.sh")
+const preCommit = read("scripts/pre-commit")
 
 assert.match(ci, /reviewdog\/action-actionlint@dbe5299849118fd6f099ba563d263d770955a64a/)
 assert.match(ci, /actions\/setup-node@820762786026740c76f36085b0efc47a31fe5020/)
@@ -38,6 +39,9 @@ assert.match(compatibility, /--tmpfs \/workspace:/)
 assert.match(compatibility, /cp -a \/source\/\. \/workspace/)
 assert.match(runner, /git archive HEAD \| tar -x -C "\$validation_dir"/)
 assert.match(runner, /omarchy plugin validate "\$validation_dir"/)
+assert.match(preCommit, /archive "\$\(git -C "\$root" write-tree\)"/)
+assert.match(preCommit, /MMW_QML_TESTS=never/)
+assert.ok(fs.statSync(".githooks/pre-commit").mode & 0o100)
 
 assert.match(release, /actions\/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8/)
 assert.match(release, /id-token:\s*write/)

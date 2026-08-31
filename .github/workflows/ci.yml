@@ -46,7 +46,7 @@ jobs:
             echo "Release archive contains generated or forbidden files" >&2
             exit 1
           fi
-          if grep -E '^(\.github|scripts|tests)/|^package(-lock)?\.json$|(^|/)node_modules/' <<<"$files"; then
+          if grep -E '^(\.github|\.githooks|scripts|tests)/|^package(-lock)?\.json$|(^|/)node_modules/' <<<"$files"; then
             echo "Release archive contains maintainer-only files" >&2
             exit 1
           fi
