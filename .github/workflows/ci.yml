@@ -42,6 +42,10 @@ jobs:
           git archive HEAD | tar -x -C "$RUNNER_TEMP/plugin"
           .omarchy/bin/omarchy-plugin-validate "$RUNNER_TEMP/plugin"
           files=$(git archive HEAD | tar -t)
+          if grep -E '(^|/)(__pycache__|node_modules|\.pytest_cache)(/|$)|\.py[co]$|\.tar\.gz(\.sha256)?$' <<<"$files"; then
+            echo "Release archive contains generated or forbidden files" >&2
+            exit 1
+          fi
           if grep -E '^(\.github|scripts|tests)/|^package(-lock)?\.json$|(^|/)node_modules/' <<<"$files"; then
             echo "Release archive contains maintainer-only files" >&2
             exit 1
@@ -53,9 +57,10 @@ jobs:
           for required in manifest.json README.md LICENSE NOTICE preview.png; do grep -qx "$required" <<<"$files"; done
       - name: Run portable behavior and QML lint suite
         run: |
-          docker run --rm --volume "$GITHUB_WORKSPACE:/workspace:ro" --workdir /workspace \
+          docker run --rm --volume "$GITHUB_WORKSPACE:/source:ro" \
+            --tmpfs /workspace:rw,exec,nosuid,size=512m --workdir /workspace \
             archlinux@sha256:4bf33b21a715aac0b48ce6e9eaed4782a898eae96f88f5da3635572129c2584a \
-            bash -lc 'pacman -Syu --noconfirm nodejs npm quickshell qt6-declarative >/dev/null && QMLLINT=/usr/lib/qt6/bin/qmllint OMARCHY_PATH=/workspace/.omarchy OMARCHY_SKIP_VALIDATE=1 MMW_QML_TESTS=never npm test'
+            bash -lc 'cp -a /source/. /workspace && pacman -Syu --noconfirm nodejs npm quickshell qt6-declarative >/dev/null && QMLLINT=/usr/lib/qt6/bin/qmllint OMARCHY_PATH=/workspace/.omarchy OMARCHY_SKIP_VALIDATE=1 MMW_QML_TESTS=never npm test'
   pages:
     name: Repository
     runs-on: ubuntu-24.04
