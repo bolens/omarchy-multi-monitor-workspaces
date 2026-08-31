@@ -156,7 +156,7 @@ Item {
               }
             }
             RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Button width"; color:Color.popups.text; font.family:Style.font.family }
-              Controls.SpinBox { from:12; to:48; value:root.values.buttonWidth; onValueModified:root.patch("buttonWidth",value) } }
+              Controls.SpinBox { from:24; to:48; value:root.values.buttonWidth; onValueModified:root.patch("buttonWidth",value) } }
             RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Horizontal margin"; color:Color.popups.text; font.family:Style.font.family }
               Controls.SpinBox { from:0; to:20; value:root.values.horizontalMargin; onValueModified:root.patch("horizontalMargin",value) } }
             RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Vertical padding"; color:Color.popups.text; font.family:Style.font.family }
@@ -169,13 +169,13 @@ Item {
               Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.emptyColorRole); onActivated:root.patch("emptyColorRole",model[index]) } }
             Text { Layout.fillWidth:true; text:"Opacity"; color:Color.popups.text; font.family:Style.font.family; font.bold:true }
             RowLayout { Layout.fillWidth:true; Text { text:"Active"; color:Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
-              Controls.Slider { Layout.fillWidth:true; from:.1; to:1; stepSize:.05; value:root.values.activeOpacity; onMoved:root.patch("activeOpacity",value) }
+              Controls.Slider { Layout.fillWidth:true; from:.45; to:1; stepSize:.05; value:root.values.activeOpacity; onMoved:root.patch("activeOpacity",value) }
               Text { text:Math.round(root.values.activeOpacity*100)+"%"; color:Color.muted; Layout.preferredWidth:Style.space(40) } }
             RowLayout { Layout.fillWidth:true; Text { text:"Occupied"; color:Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
-              Controls.Slider { Layout.fillWidth:true; from:.1; to:1; stepSize:.05; value:root.values.occupiedOpacity; onMoved:root.patch("occupiedOpacity",value) }
+              Controls.Slider { Layout.fillWidth:true; from:.45; to:1; stepSize:.05; value:root.values.occupiedOpacity; onMoved:root.patch("occupiedOpacity",value) }
               Text { text:Math.round(root.values.occupiedOpacity*100)+"%"; color:Color.muted; Layout.preferredWidth:Style.space(40) } }
             RowLayout { Layout.fillWidth:true; Text { text:"Empty"; color:Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
-              Controls.Slider { Layout.fillWidth:true; from:.1; to:1; stepSize:.05; value:root.values.emptyOpacity; onMoved:root.patch("emptyOpacity",value) }
+              Controls.Slider { Layout.fillWidth:true; from:.45; to:1; stepSize:.05; value:root.values.emptyOpacity; onMoved:root.patch("emptyOpacity",value) }
               Text { text:Math.round(root.values.emptyOpacity*100)+"%"; color:Color.muted; Layout.preferredWidth:Style.space(40) } }
           }
         }

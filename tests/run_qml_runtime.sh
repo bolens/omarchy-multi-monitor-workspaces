@@ -46,5 +46,6 @@ run_test() {
 run_test RuntimeModelTest.qml MMW_QML_MODEL_OK
 run_test RuntimeServiceTest.qml MMW_QML_SERVICE_OK
 run_test RuntimeSettingsTest.qml MMW_QML_SETTINGS_OK
+run_test RuntimeAccessibilityTest.qml MMW_QML_ACCESSIBILITY_OK
 runtime_leaks=$(leaked_runtime_processes || true)
 [[ -z $runtime_leaks ]] || { printf 'Leaked Quickshell runtime harnesses:\n%s\n' "$runtime_leaks" >&2; exit 1; }

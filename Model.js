@@ -11,7 +11,7 @@ var DEFAULTS = {
   activeGlyph: "󱓻", occupiedGlyph: "●", emptyGlyph: "○", workspaceGlyphs: {},
   showEmpty: true, showTooltips: true, wrapScroll: true, clickAction: "focus",
   activeOpacity: 1, occupiedOpacity: 0.82, emptyOpacity: 0.45,
-  buttonWidth: 20, horizontalMargin: 6, verticalPadding: 6,
+  buttonWidth: 24, horizontalMargin: 6, verticalPadding: 6,
   activeColorRole: "accent", occupiedColorRole: "foreground", emptyColorRole: "muted"
 }
 
@@ -106,10 +106,10 @@ function sanitizeSettings(value) {
     showTooltips: source.showTooltips !== false,
     wrapScroll: source.wrapScroll !== false,
     clickAction: enumValue(source.clickAction, ["focus", "move", "move-silent"], DEFAULTS.clickAction),
-    activeOpacity: boundedNumber(source.activeOpacity, DEFAULTS.activeOpacity, 0.1, 1),
-    occupiedOpacity: boundedNumber(source.occupiedOpacity, DEFAULTS.occupiedOpacity, 0.1, 1),
-    emptyOpacity: boundedNumber(source.emptyOpacity, DEFAULTS.emptyOpacity, 0.1, 1),
-    buttonWidth: boundedInteger(source.buttonWidth, DEFAULTS.buttonWidth, 12, 48),
+    activeOpacity: boundedNumber(source.activeOpacity, DEFAULTS.activeOpacity, 0.45, 1),
+    occupiedOpacity: boundedNumber(source.occupiedOpacity, DEFAULTS.occupiedOpacity, 0.45, 1),
+    emptyOpacity: boundedNumber(source.emptyOpacity, DEFAULTS.emptyOpacity, 0.45, 1),
+    buttonWidth: boundedInteger(source.buttonWidth, DEFAULTS.buttonWidth, 24, 48),
     horizontalMargin: boundedInteger(source.horizontalMargin, DEFAULTS.horizontalMargin, 0, 20),
     verticalPadding: boundedInteger(source.verticalPadding, DEFAULTS.verticalPadding, 0, 16),
     activeColorRole: enumValue(source.activeColorRole, ["accent","foreground","muted","urgent"], DEFAULTS.activeColorRole),
@@ -176,8 +176,8 @@ function colorRoleFor(mode, active, occupied, settings) {
 }
 function opacityFor(mode, active, occupied, settings) {
   var clean=isObject(settings) ? settings : DEFAULTS
-  if (active || (mode==="hybrid" && occupied)) return boundedNumber(clean.activeOpacity,DEFAULTS.activeOpacity,.1,1)
-  return occupied ? boundedNumber(clean.occupiedOpacity,DEFAULTS.occupiedOpacity,.1,1) : boundedNumber(clean.emptyOpacity,DEFAULTS.emptyOpacity,.1,1)
+  if (active || (mode==="hybrid" && occupied)) return boundedNumber(clean.activeOpacity,DEFAULTS.activeOpacity,.45,1)
+  return occupied ? boundedNumber(clean.occupiedOpacity,DEFAULTS.occupiedOpacity,.45,1) : boundedNumber(clean.emptyOpacity,DEFAULTS.emptyOpacity,.45,1)
 }
 function visibleWorkspaceIds(ids, occupiedById, activeId, showEmpty) {
   if (showEmpty) return ids.slice()
