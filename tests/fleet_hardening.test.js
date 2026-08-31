@@ -36,7 +36,7 @@ assert.match(compatibility, /\$GITHUB_WORKSPACE:\/source:ro/)
 assert.match(compatibility, /--tmpfs \/workspace:/)
 assert.match(compatibility, /cp -a \/source\/\. \/workspace/)
 
-assert.match(release, /actions\/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a/)
+assert.match(release, /actions\/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8/)
 assert.match(release, /id-token:\s*write/)
 assert.match(release, /attestations:\s*write/)
 assert.match(release, /validate:[\s\S]*?checks:\s*write/)
