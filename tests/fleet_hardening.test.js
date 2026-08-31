@@ -12,6 +12,7 @@ const compatibility = fs.existsSync(".github/workflows/compatibility.yml")
 const capture = fs.existsSync("scripts/capture-screenshots")
   ? read("scripts/capture-screenshots")
   : ""
+const runner = read("tests/run_all.sh")
 
 assert.match(ci, /reviewdog\/action-actionlint@dbe5299849118fd6f099ba563d263d770955a64a/)
 assert.match(ci, /actions\/setup-node@820762786026740c76f36085b0efc47a31fe5020/)
@@ -35,6 +36,8 @@ assert.match(compatibility, /workflow_dispatch:/)
 assert.match(compatibility, /\$GITHUB_WORKSPACE:\/source:ro/)
 assert.match(compatibility, /--tmpfs \/workspace:/)
 assert.match(compatibility, /cp -a \/source\/\. \/workspace/)
+assert.match(runner, /git archive HEAD \| tar -x -C "\$validation_dir"/)
+assert.match(runner, /omarchy plugin validate "\$validation_dir"/)
 
 assert.match(release, /actions\/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8/)
 assert.match(release, /id-token:\s*write/)
