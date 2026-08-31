@@ -11,7 +11,11 @@ persistence, security, or compatibility changes.
 git clone https://github.com/bolens/omarchy-multi-monitor-workspaces.git
 cd omarchy-multi-monitor-workspaces
 MMW_QML_TESTS=never npm test
+npm run hooks:install
 ```
+
+The pre-commit hook validates the staged release payload and runs the
+deterministic suite. Graphical and live IPC checks remain explicit.
 
 Pull requests should explain the problem, chosen behavior, user-visible impact,
 and exact validation performed. Update `CHANGELOG.md` and documentation for
