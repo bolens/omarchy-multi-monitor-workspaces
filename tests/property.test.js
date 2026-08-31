@@ -10,7 +10,7 @@ for(let iteration=0;iteration<5000;iteration++) {
   const count=Math.floor(random()*50)-10, monitors=Array.from({length:1+Math.floor(random()*8)},(_,i)=>`DP-${i+1}`)
   const clean=model.sanitizeSettings({count,monitorPriority:monitors.slice().reverse().concat(monitors),buttonWidth:random()*100-20,
     activeOpacity:random()*3-1,monitorBanks:Object.fromEntries(monitors.map(name=>[name,Math.floor(random()*4)]))})
-  assert.ok(clean.count>=1&&clean.count<=20); assert.ok(clean.buttonWidth>=12&&clean.buttonWidth<=48); assert.ok(clean.activeOpacity>=.1&&clean.activeOpacity<=1)
+  assert.ok(clean.count>=1&&clean.count<=20); assert.ok(clean.buttonWidth>=24&&clean.buttonWidth<=48); assert.ok(clean.activeOpacity>=.45&&clean.activeOpacity<=1)
   const assignments=model.assignedBankMap(clean,monitors)
   assert.equal(new Set(Object.values(assignments)).size,monitors.length,"duplicate overrides must be deconflicted")
   const banks=monitors.map(name=>model.workspaceIds(model.bankIndex(clean,name,monitors),clean.count))

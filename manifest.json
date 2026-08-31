@@ -34,7 +34,7 @@
       "activeOpacity": 1,
       "occupiedOpacity": 0.82,
       "emptyOpacity": 0.45,
-      "buttonWidth": 20,
+      "buttonWidth": 24,
       "horizontalMargin": 6,
       "verticalPadding": 6,
       "activeColorRole": "accent",
@@ -51,7 +51,10 @@
       {"key":"showTooltips","type":"boolean","label":"Show tooltips","defaultValue":true},
       {"key":"wrapScroll","type":"boolean","label":"Wrap scroll navigation","defaultValue":true},
       {"key":"clickAction","type":"enum","label":"Click action","options":["focus","move","move-silent"],"defaultValue":"focus"},
-      {"key":"buttonWidth","type":"integer","label":"Workspace width","min":12,"max":48,"defaultValue":20}
+      {"key":"activeOpacity","type":"number","label":"Active workspace opacity","min":0.45,"max":1,"defaultValue":1},
+      {"key":"occupiedOpacity","type":"number","label":"Occupied workspace opacity","min":0.45,"max":1,"defaultValue":0.82},
+      {"key":"emptyOpacity","type":"number","label":"Empty workspace opacity","min":0.45,"max":1,"defaultValue":0.45},
+      {"key":"buttonWidth","type":"integer","label":"Workspace width","min":24,"max":48,"defaultValue":24}
     ]
   }
 }

@@ -4,6 +4,7 @@ const path = require("node:path")
 const root = path.join(__dirname, "..")
 const read = file => fs.readFileSync(path.join(root, file), "utf8")
 const service = read("Service.qml"), widget = read("BarWidget.qml"), settings = read("SettingsPanel.qml"), model = read("Model.js")
+const button = read("Button.qml"), widgetButton = read("WidgetButton.qml")
 const capture = read("scripts/capture-screenshots"), live = read("scripts/verify-live")
 const qmlRuntimeRunner = read("tests/run_qml_runtime.sh")
 const testRunner = read("tests/run_all.sh")
@@ -13,6 +14,17 @@ assert.doesNotMatch(qmlRuntimeRunner, /(?:^|\n)\s*quickshell list --all/,
   "runtime leak detection must not bypass the executable resolver")
 assert.match(testRunner, /"\$quickshell_bin" list --all/,
   "persistent inventory must use the resolved quickshell or qs executable")
+assert.match(button, /focusable:\s*true[\s\S]*Accessible\.role:\s*Accessible\.Button[\s\S]*Accessible\.onPressAction/,
+  "local buttons must be keyboard-focusable and expose an assistive press action")
+assert.match(button, /function triggerAccessiblePress\(\)[\s\S]*if \(!enabled\) return false/,
+  "assistive activation must honor disabled button state")
+assert.match(widgetButton, /activeFocusOnTab:[\s\S]*Keys\.onSpacePressed:[\s\S]*Accessible\.name:[\s\S]*Accessible\.onPressAction/,
+  "workspace bar targets must support keyboard and assistive activation")
+assert.match(settings, /SpinBox \{ from:24; to:48/, "workspace targets must retain a 24-pixel minimum")
+assert.match(widget, /columns:\s*root\.vertical \? 1 : root\.bankWorkspaceIds\.length/,
+  "workspace buttons must stack on left and right bars")
+assert.match(widget, /fixedWidth:\s*root\.vertical \? root\.barSize[\s\S]*fixedHeight:\s*root\.barSize/,
+  "workspace targets must use the host bar thickness in either orientation")
 for (const [name, source] of [["Service",service],["BarWidget",widget]])
   assert.doesNotMatch(source, /\bProcess\s*\{|execDetached|quickshell\s+--|\bqs\s+/, `${name} must not launch subprocesses or shells`)
 assert.match(service, /target:\s*"multi-monitor-workspaces"/)

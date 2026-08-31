@@ -20,6 +20,7 @@ controls, wheel navigation, and one service-owned IPC interface.
 - Label modes include local numbers, global IDs, state glyphs, and hybrid (active glyph, accent-colored occupied numbers, inactive empty numbers).
 - Left click follows the configured action; middle click moves silently; right click opens settings; the wheel navigates within the current monitor bank.
 - Empty workspaces remain visible by default, preserving persistent workspace access.
+- Workspace targets stay at least 24 pixels wide, retain readable state opacity, and expose keyboard and assistive-technology activation.
 
 The widget only reads Quickshell's Hyprland model and uses the existing bar command runner for workspace actions. It does not launch processes, shells, or extra Quickshell instances.
 
