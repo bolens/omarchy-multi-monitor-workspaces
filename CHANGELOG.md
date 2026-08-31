@@ -5,6 +5,12 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Align CI, release, dependency, runtime, and archive policies with the
+  maintained plugin suite.
+- Route Quickshell inventory and leak checks through the configured executable.
+
 ## [2.2.2] - 2026-08-30
 
 ### Added

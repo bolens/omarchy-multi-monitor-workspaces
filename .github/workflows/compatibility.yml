@@ -37,7 +37,6 @@ jobs:
           persist-credentials: false
       - name: Run portable plugin checks
         run: |
-          docker run --rm --volume "$GITHUB_WORKSPACE:/workspace" --workdir /workspace \
+          docker run --rm --volume "$GITHUB_WORKSPACE:/workspace:ro" --workdir /workspace \
             archlinux@sha256:4bf33b21a715aac0b48ce6e9eaed4782a898eae96f88f5da3635572129c2584a \
             bash -lc 'pacman -Syu --noconfirm nodejs npm quickshell qt6-declarative >/dev/null && QMLLINT=/usr/lib/qt6/bin/qmllint OMARCHY_PATH=/workspace/.omarchy OMARCHY_SKIP_VALIDATE=1 MMW_QML_TESTS=never npm test'
-
