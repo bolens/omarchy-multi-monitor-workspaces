@@ -62,16 +62,24 @@ if [[ -z $monitor ]]; then monitor=$(jq -r '.[0] // ""' <<<"$monitors"); fi
 jq -e --arg monitor "$monitor" 'index($monitor) != null' <<<"$monitors" >/dev/null ||
   { printf 'Workspaces is not registered on %s.\n' "$monitor" >&2; exit 1; }
 [[ $monitor =~ ^[A-Za-z0-9._:-]+$ ]] || { printf 'Unsafe monitor name: %s\n' "$monitor" >&2; exit 1; }
-selected_monitor=$(hyprctl monitors -j | jq -c --arg monitor "$monitor" '.[]|select(.name==$monitor)')
-initial_workspace=$(jq -r '.activeWorkspace.id' <<<"$selected_monitor")
 initial_focused_monitor=$(hyprctl monitors -j | jq -r '.[]|select(.focused)|.name')
 workspace_snapshot=$(hyprctl workspaces -j)
-if [[ -z $capture_workspace ]]; then
-  capture_workspace=$(jq -r --arg monitor "$monitor" --argjson initial "$initial_workspace" '[.[]|select(.monitor==$monitor and .windows==0 and .id>0 and .id!=$initial)|.id]|sort|.[0] // empty' <<<"$workspace_snapshot")
-fi
-[[ -n $capture_workspace ]] || { printf 'No empty workspace is available on %s.\n' "$monitor" >&2; exit 1; }
-jq -e --arg monitor "$monitor" --argjson workspace "$capture_workspace" 'any(.[];.id==$workspace and .monitor==$monitor and .windows==0)' <<<"$workspace_snapshot" >/dev/null ||
-  { printf 'Capture workspace %s is not empty on %s.\n' "$capture_workspace" "$monitor" >&2; exit 1; }
+declare -A initial_workspaces capture_workspaces
+while read -r screen; do
+  [[ $screen =~ ^[A-Za-z0-9._:-]+$ ]] || { printf 'Unsafe monitor name: %s\n' "$screen" >&2; exit 1; }
+  initial_workspaces["$screen"]=$(hyprctl monitors -j | jq -r --arg monitor "$screen" '.[]|select(.name==$monitor)|.activeWorkspace.id')
+  requested=""
+  if [[ $screen == "$monitor" ]]; then requested=$capture_workspace; fi
+  if [[ -z $requested ]]; then
+    requested=$(jq -r --arg monitor "$screen" --argjson initial "${initial_workspaces[$screen]}" \
+      '[.[]|select(.monitor==$monitor and .windows==0 and .id>0 and .id!=$initial)|.id]|sort|.[0] // empty' <<<"$workspace_snapshot")
+  fi
+  [[ -n $requested ]] || { printf 'No empty workspace is available on %s.\n' "$screen" >&2; exit 1; }
+  jq -e --arg monitor "$screen" --argjson workspace "$requested" \
+    'any(.[];.id==$workspace and .monitor==$monitor and .windows==0)' <<<"$workspace_snapshot" >/dev/null ||
+    { printf 'Capture workspace %s is not empty on %s.\n' "$requested" "$screen" >&2; exit 1; }
+  capture_workspaces["$screen"]=$requested
+done < <(jq -r '.[]' <<<"$monitors")
 
 initial_open_monitor=""
 workspace_switched=false
@@ -88,8 +96,10 @@ restore() {
     sleep 0.03
   done
   if [[ $workspace_switched == true ]]; then
-    hyprctl dispatch "hl.dsp.focus({ monitor = \"$monitor\" })" >/dev/null 2>&1 || true
-    hyprctl dispatch "hl.dsp.focus({ workspace = \"$initial_workspace\" })" >/dev/null 2>&1 || true
+    while read -r screen; do
+      hyprctl dispatch "hl.dsp.focus({ monitor = \"$screen\" })" >/dev/null 2>&1 || true
+      hyprctl dispatch "hl.dsp.focus({ workspace = \"${initial_workspaces[$screen]}\" })" >/dev/null 2>&1 || true
+    done < <(jq -r '.[]' <<<"$monitors")
     [[ -z $initial_focused_monitor ]] || hyprctl dispatch "hl.dsp.focus({ monitor = \"$initial_focused_monitor\" })" >/dev/null 2>&1 || true
     workspace_switched=false
   fi
@@ -108,8 +118,11 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 workspace_switched=true
-hyprctl dispatch "hl.dsp.focus({ monitor = \"$monitor\" })" >/dev/null
-hyprctl dispatch "hl.dsp.focus({ workspace = \"$capture_workspace\" })" >/dev/null
+while read -r screen; do
+  capture_workspace=${capture_workspaces["$screen"]}
+  hyprctl dispatch "hl.dsp.focus({ monitor = \"$screen\" })" >/dev/null
+  hyprctl dispatch "hl.dsp.focus({ workspace = \"$capture_workspace\" })" >/dev/null
+done < <(jq -r '.[]' <<<"$monitors")
 
 wait_for_commit() {
   for _attempt in {1..80}; do

@@ -83,6 +83,8 @@ assert.match(capture,/local status=\$\?/,
   "capture cleanup must preserve the failing command status")
 assert.match(capture,/hl\.dsp\.focus\(\{ workspace/,
   "capture must use an empty workspace instead of retaining private window content")
+assert.match(capture,/while read -r screen; do[\s\S]*?capture_workspaces\["\$screen"\][\s\S]*?hl\.dsp\.focus\(\{ monitor/,
+  "capture must place every recorded monitor on its own verified empty workspace")
 assert.match(capture,/hl\.dsp\.focus\(\{ monitor/,
   "capture must restore the selected and previously focused monitor")
 assert.match(capture,/grim -o "\$monitor"/,
