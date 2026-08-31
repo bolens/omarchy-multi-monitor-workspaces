@@ -5,11 +5,20 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.2.3] - 2026-08-31
+
 ### Changed
 
 - Align CI, release, dependency, runtime, and archive policies with the
   maintained plugin suite.
 - Route Quickshell inventory and leak checks through the configured executable.
+- Validate the tracked release payload locally and run staged-tree checks from
+  the repository pre-commit hook.
+
+### Fixed
+
+- Isolate every recorded monitor on a verified empty workspace during visual
+  capture and restore each monitor independently.
 
 ## [2.2.2] - 2026-08-30
 
@@ -33,5 +42,6 @@ project follows [Semantic Versioning](https://semver.org/).
 - Centralize settings, topology, allocation, and IPC ownership in one service.
 - Preserve the hybrid active-glyph and occupied/empty number presentation.
 
-[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.2...HEAD
+[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.3...HEAD
+[2.2.3]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/bolens/omarchy-multi-monitor-workspaces/releases/tag/v2.2.2
