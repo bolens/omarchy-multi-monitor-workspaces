@@ -9,23 +9,20 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Add complete favicon, touch-icon, install-manifest, and social-card metadata
-  to the Pages site, backed by regression checks.
+- Pages now include favicons, touch and install icons, a web manifest, and a 1200x630 social card. Regression tests protect the metadata and image dimensions.
 
 ## [2.2.6] - 2026-09-01
 
 ### Added
 
-- Add selectable dark and light themes to the Pages site.
-- Default to GitHub Light for a browser light preference while retaining the
-  existing dark palette when no color preference is specified.
+- Pages offer selectable dark and light themes.
+- Browsers that prefer light mode start with GitHub Light; browsers without a preference keep the default dark theme.
 
 ## [2.2.5] - 2026-09-01
 
 ### Fixed
 
-- Delegate `pull-requests: read` to the reusable validation workflow so
-  future tag-triggered releases can start after CI path filtering was introduced.
+- Tag-triggered releases now receive the pull-request metadata required by path-filtered validation.
 
 ## [2.2.4] - 2026-09-01
 
