@@ -35,14 +35,18 @@ function glyph(value, fallback) {
   return candidate ? candidate.slice(0, 8) : fallback
 }
 function isBoundedList(value) {
-  if (!value || typeof value !== "object") return false
+  return boundedListLength(value)>=0
+}
+function boundedListLength(value) {
+  if (!value || typeof value !== "object") return -1
   var length=Number(value.length)
-  return isFinite(length) && length>=0 && Math.floor(length)===length && length<=4096
+  return isFinite(length) && length>=0 && Math.floor(length)===length && length<=4096 ? length : -1
 }
 function uniqueNames(value, limit) {
-  if (!isBoundedList(value)) return []
+  var length=boundedListLength(value)
+  if (length<0) return []
   var result = []
-  for (var index = 0; index < value.length && result.length < limit; index++) {
+  for (var index = 0; index < length && result.length < limit; index++) {
     var name = String(value[index] || "").trim().slice(0,128)
     if (name && result.indexOf(name) < 0) result.push(name)
   }
