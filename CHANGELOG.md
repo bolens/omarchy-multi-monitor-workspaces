@@ -5,6 +5,14 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.2.6] - 2026-09-01
+
+### Added
+
+- Add selectable dark and light themes to the Pages site.
+- Default to GitHub Light for a browser light preference while retaining the
+  existing dark palette when no color preference is specified.
+
 ## [2.2.5] - 2026-09-01
 
 ### Fixed
@@ -60,7 +68,8 @@ project follows [Semantic Versioning](https://semver.org/).
 - Centralize settings, topology, allocation, and IPC ownership in one service.
 - Preserve the hybrid active-glyph and occupied/empty number presentation.
 
-[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.5...HEAD
+[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.6...HEAD
+[2.2.6]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.5...v2.2.6
 [2.2.5]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.4...v2.2.5
 [2.2.4]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.3...v2.2.4
 [2.2.3]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.2...v2.2.3

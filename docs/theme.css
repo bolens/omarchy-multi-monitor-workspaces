@@ -1,0 +1,14 @@
+:root{color-scheme:dark}
+[data-theme="tokyo-night"]{--bg:#1a1b26;--ink:#c0caf5;--muted:#a9b1d6;--cyan:#7aa2f7;--coral:#f7768e;--line:#414868;--panel:#24283b}
+[data-theme="catppuccin"]{--bg:#1e1e2e;--ink:#cdd6f4;--muted:#a6adc8;--cyan:#89dceb;--coral:#f38ba8;--line:#45475a;--panel:#313244}
+[data-theme="gruvbox"]{--bg:#282828;--ink:#ebdbb2;--muted:#a89984;--cyan:#83a598;--coral:#fb4934;--line:#504945;--panel:#3c3836}
+[data-theme="nord"]{--bg:#2e3440;--ink:#eceff4;--muted:#d8dee9;--cyan:#88c0d0;--coral:#bf616a;--line:#4c566a;--panel:#3b4252}
+[data-theme="github-dark"]{--bg:#0d1117;--ink:#f0f6fc;--muted:#a7b0ba;--cyan:#58a6ff;--coral:#f85149;--line:#30363d;--panel:#161b22}
+[data-theme="github-light"]{color-scheme:light;--bg:#ffffff;--ink:#1f2328;--muted:#59636e;--cyan:#0969da;--coral:#cf222e;--line:#d0d7de;--panel:#f6f8fa}
+[data-theme="catppuccin-latte"]{color-scheme:light;--bg:#eff1f5;--ink:#4c4f69;--muted:#6c6f85;--cyan:#179299;--coral:#d20f39;--line:#bcc0cc;--panel:#e6e9ef}
+[data-theme="solarized-light"]{color-scheme:light;--bg:#fdf6e3;--ink:#073642;--muted:#586e75;--cyan:#268bd2;--coral:#dc322f;--line:#93a1a1;--panel:#eee8d5}
+.theme-picker{display:flex;align-items:center;color:var(--muted);font-size:.7rem}.theme-picker span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.theme-picker select{max-width:9rem;padding:.45rem .6rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;text-transform:uppercase;cursor:pointer}
+:is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) body{background-image:linear-gradient(color-mix(in srgb,var(--line) 35%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--line) 35%,transparent) 1px,transparent 1px)}
+:is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) .topology{background:color-mix(in srgb,var(--bg) 88%,transparent);box-shadow:16px 16px 0 var(--line)}
+:is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) .code-grid pre,:is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) .terminal{background:var(--panel);box-shadow:10px 10px 0 var(--line)}
+@media(max-width:820px){.theme-picker{margin-left:auto}.theme-picker select{max-width:7.5rem}}
