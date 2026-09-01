@@ -7,7 +7,7 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- Delegate pull-request read permission to the reusable validation workflow so
+- Delegate `pull-requests: read` to the reusable validation workflow so
   future tag-triggered releases can start after CI path filtering was introduced.
 
 ## [2.2.4] - 2026-09-01
