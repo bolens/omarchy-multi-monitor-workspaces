@@ -5,6 +5,8 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.2.5] - 2026-09-01
+
 ### Fixed
 
 - Delegate `pull-requests: read` to the reusable validation workflow so
@@ -58,7 +60,8 @@ project follows [Semantic Versioning](https://semver.org/).
 - Centralize settings, topology, allocation, and IPC ownership in one service.
 - Preserve the hybrid active-glyph and occupied/empty number presentation.
 
-[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.4...HEAD
+[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.5...HEAD
+[2.2.5]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.4...v2.2.5
 [2.2.4]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.3...v2.2.4
 [2.2.3]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/bolens/omarchy-multi-monitor-workspaces/releases/tag/v2.2.2
