@@ -2,12 +2,14 @@ import Quickshell
 import QtQuick
 
 ShellRoot {
+  id: root
+  property list<string> loadedMonitorPriority: ["DP-3", "DP-1"]
   QtObject {
     id: shellMock
     property int writes: 0
     property bool failWrites: false
     property var lastEntry: ({})
-    property var shellConfig: ({bar:{layout:{left:[{id:"io.github.bolens.multi-monitor-workspaces",count:5,monitorPriority:["DP-3","DP-1"],_multiMonitorWorkspacesRevision:4}]}}})
+    property var shellConfig: ({bar:{layout:{left:[{id:"io.github.bolens.multi-monitor-workspaces",count:5,monitorPriority:root.loadedMonitorPriority,_multiMonitorWorkspacesRevision:4}]}}})
     function updateEntryInline(id, entry) { if (failWrites) throw new Error("simulated write failure"); if (id !== "io.github.bolens.multi-monitor-workspaces") throw new Error("wrong id"); writes++; lastEntry=entry; shellConfig=({bar:{layout:{left:[entry]}}}) }
   }
   QtObject { id: dp1; property bool opened:false; function showSettings(_page){opened=true} function closeSettings(){opened=false}
@@ -71,6 +73,9 @@ ShellRoot {
     if (service.updateSettings([]).indexOf("error:") !== 0) throw new Error("invalid settings accepted")
     service.updateSettings({count:8}); service.flushSettings()
     if (shellMock.writes !== 1 || shellMock.lastEntry.count !== 8 || shellMock.lastEntry._multiMonitorWorkspacesRevision !== 5) throw new Error("settings write failed")
+    var priorityReload=JSON.parse(JSON.stringify(shellMock.lastEntry))
+    service.configure(priorityReload,true)
+    if (service.effectiveSettings.monitorPriority.join(",") !== "DP-3,DP-1") throw new Error("monitor priority reset after save and reload")
     service.configure({id:"io.github.bolens.multi-monitor-workspaces",count:3,_multiMonitorWorkspacesRevision:4},true)
     if (service.effectiveSettings.count !== 8) throw new Error("stale presentation overwrote a committed revision")
     service.updateSettings({labelMode:"glyph"}); service.updateSettings({buttonWidth:31}); service.flushSettings()

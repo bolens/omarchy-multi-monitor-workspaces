@@ -23,9 +23,13 @@ BarWidget {
   // Registration is the single monitor-set snapshot for every presentation.
   // This prevents independently observed compositor hotplug frames from
   // temporarily assigning overlapping banks to different bar instances.
-  readonly property var bankWorkspaceIds: workspaceService && screenName
-    ? (workspaceService.topologySerial, workspaceService.workspaceIdsFor(screenName))
-    : Model.workspaceIds(Model.bankIndex(effectiveSettings,screenName,screenName ? [screenName] : []),effectiveSettings.count)
+  readonly property var bankWorkspaceIds: {
+    if (workspaceService && screenName) {
+      workspaceService.topologySerial
+      return workspaceService.workspaceIdsFor(screenName)
+    }
+    return Model.workspaceIds(Model.bankIndex(effectiveSettings,screenName,screenName ? [screenName] : []),effectiveSettings.count)
+  }
   readonly property int monitorBankIndex: bankWorkspaceIds.length
     ? Math.floor((bankWorkspaceIds[0]-1)/effectiveSettings.count) : 0
   readonly property real trailingGap: root.vertical ? 0 : Style.spaceReal(1.5)

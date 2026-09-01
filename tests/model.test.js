@@ -29,6 +29,14 @@ const dirty = model.sanitizeSettings({
 })
 assert.equal(dirty.count, 20)
 assert.deepEqual(Array.from(dirty.monitorPriority), ["DP-3", "DP-1"])
+assert.deepEqual(Array.from(model.sanitizeSettings({monitorPriority:{0:"DP-3",1:"DP-1",length:2}}).monitorPriority), ["DP-3","DP-1"])
+let lengthReads = 0
+const shiftingPriority = {0:"DP-3",1:"DP-1"}
+Object.defineProperty(shiftingPriority, "length", {get() { lengthReads++; return lengthReads === 1 ? 2 : 4097 }})
+assert.deepEqual(Array.from(model.sanitizeSettings({monitorPriority:shiftingPriority}).monitorPriority), ["DP-3","DP-1"])
+assert.equal(lengthReads, 1)
+for (const invalidList of [{length:Infinity},{length:4097},{length:-1},{length:1.5},function monitorList() {}])
+  assert.deepEqual(Array.from(model.sanitizeSettings({monitorPriority:invalidList}).monitorPriority), [])
 assert.deepEqual(JSON.parse(JSON.stringify(dirty.monitorBanks)), {"DP-1": 0, "DP-3": 4})
 assert.equal(dirty.labelMode, "number")
 assert.equal(dirty.activeGlyph, "A")
