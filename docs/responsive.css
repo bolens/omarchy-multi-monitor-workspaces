@@ -1,3 +1,7 @@
+.install p {
+  color: #5f1e13;
+}
+
 @media (max-width: 820px) {
   .hero,
   .model,
