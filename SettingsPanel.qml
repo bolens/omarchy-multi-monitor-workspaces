@@ -95,7 +95,11 @@ Item {
                 + (root.service ? root.service.monitorNames().map(function(name){return name+" → "+(root.service.workspaceIdsFor(name)[0])+"–"+root.service.workspaceIdsFor(name).slice(-1)[0]}).join(" · ") : "unavailable");
               textFormat:Text.PlainText; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
             Repeater {
-              model:root.service ? (root.service.topologySerial, root.service.monitorNames()) : []
+              model: {
+                if (!root.service) return []
+                root.service.topologySerial
+                return root.service.monitorNames()
+              }
               RowLayout {
                 required property string modelData
                 Layout.fillWidth:true
