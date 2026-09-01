@@ -5,6 +5,13 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.2.7] - 2026-09-01
+
+### Added
+
+- Add complete favicon, touch-icon, install-manifest, and social-card metadata
+  to the Pages site, backed by regression checks.
+
 ## [2.2.6] - 2026-09-01
 
 ### Added
@@ -68,7 +75,8 @@ project follows [Semantic Versioning](https://semver.org/).
 - Centralize settings, topology, allocation, and IPC ownership in one service.
 - Preserve the hybrid active-glyph and occupied/empty number presentation.
 
-[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.6...HEAD
+[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.7...HEAD
+[2.2.7]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.6...v2.2.7
 [2.2.6]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.5...v2.2.6
 [2.2.5]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.4...v2.2.5
 [2.2.4]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.3...v2.2.4
