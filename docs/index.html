@@ -6,12 +6,14 @@
   <meta name="description" content="Assign separate, non-overlapping workspace banks to every monitor in Omarchy's Hyprland session.">
   <meta name="theme-color" content="#071619">
   <script>
-    try {
-      const requested = new URLSearchParams(location.search).get("theme");
-      const saved = localStorage.getItem("multi-monitor-workspaces-site-theme");
-      const preferred = matchMedia("(prefers-color-scheme: light)").matches ? "github-light" : "workspaces";
-      document.documentElement.dataset.theme = requested || saved || preferred;
-    } catch { document.documentElement.dataset.theme = "workspaces"; }
+    const root = document.documentElement;
+    let requested = null;
+    let saved = null;
+    try { requested = new URLSearchParams(location.search).get("theme"); } catch {}
+    try { saved = root.dataset.themeStorage ? localStorage.getItem(root.dataset.themeStorage) : null; } catch {}
+    const preferred = typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: light)").matches
+      ? "github-light" : root.dataset.defaultTheme;
+    root.dataset.theme = requested || saved || preferred;
   </script>
   <meta property="og:title" content="Multi-Monitor Workspaces for Omarchy">
   <meta property="og:description" content="Assign a separate workspace bank to every display.">
