@@ -40,7 +40,7 @@ if [[ ${OMARCHY_SKIP_VALIDATE:-0} != 1 ]]; then
   rm -rf -- "$validation_dir"
   trap - EXIT
 fi
-if [[ ${MMW_QML_TESTS:-auto} == always ]] || { [[ ${MMW_QML_TESTS:-auto} == auto ]] && [[ -S ${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/wayland-1 ]] && shell_pid=$(quickshell list --all 2>/dev/null | awk '/Process ID:/{pid=$3}/omarchy-overlay/{print pid}') && [[ -n $shell_pid ]] && [[ $(quickshell ipc --pid "$shell_pid" call shell ping 2>/dev/null || true) == ok ]]; }; then
+if [[ ${MMW_QML_TESTS:-auto} == always ]] || { [[ ${MMW_QML_TESTS:-auto} == auto ]] && [[ -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/wayland-1" ]] && shell_pid=$(quickshell list --all 2>/dev/null | awk '/Process ID:/{pid=$3}/omarchy-overlay/{print pid}') && [[ -n $shell_pid ]] && [[ $(quickshell ipc --pid "$shell_pid" call shell ping 2>/dev/null || true) == ok ]]; }; then
   before=$(persistent_shell_inventory)
   tests/run_qml_runtime.sh
   after=$(persistent_shell_inventory)
