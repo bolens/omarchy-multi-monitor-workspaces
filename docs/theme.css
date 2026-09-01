@@ -11,4 +11,7 @@
 :is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) body{background-image:linear-gradient(color-mix(in srgb,var(--line) 35%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--line) 35%,transparent) 1px,transparent 1px)}
 :is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) .topology{background:color-mix(in srgb,var(--bg) 88%,transparent);box-shadow:16px 16px 0 var(--line)}
 :is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) .code-grid pre,:is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) .terminal{background:var(--panel);box-shadow:10px 10px 0 var(--line)}
+:is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) .solid{background:var(--ink);color:var(--bg)}
+:is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) :is(.metrics,.result,.install){background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+:is([data-theme="github-light"],[data-theme="catppuccin-latte"],[data-theme="solarized-light"]) :is(.metrics span,.result span,.install .kicker,.install p){color:var(--ink)}
 @media(max-width:820px){.theme-picker{margin-left:auto}.theme-picker select{max-width:7.5rem}}

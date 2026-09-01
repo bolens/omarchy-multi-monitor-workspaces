@@ -9,6 +9,7 @@ for(const theme of ["github-light","catppuccin-latte","solarized-light"]) assert
 assert.match(html,/prefers-color-scheme: light/);assert.match(html,/\? "github-light" : root\.dataset\.defaultTheme/)
 assert.match(html,/localStorage\.getItem\(root\.dataset\.themeStorage\)/)
 assert.match(themeCss,/\[data-theme="github-light"\]\{color-scheme:light/);assert.match(themeJs,/if \(themeColor\)/);assert.match(themeJs,/if \(root\.dataset\.themeStorage\)/)
+assert.match(themeCss,/\.metrics span,[^}]*\.install p\)\{color:var\(--ink\)\}/)
 assert.match(notFound,/prefers-color-scheme: light/);assert.match(notFound,/URLSearchParams/);assert.match(notFound,/root\.dataset\.themeStorage/)
 for(const term of ["1 → 100 monitors","Atomic topology","per-workspace glyph","Race-safe persistence"]) assert.match(html,new RegExp(term,"i"))
 assert.match(html,/\{\{VERSION\}\}/); assert.match(html,/class="skip"/); assert.match(css,/prefers-reduced-motion/)
