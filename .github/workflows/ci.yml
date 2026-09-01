@@ -17,6 +17,7 @@ jobs:
   changes:
     name: Changes
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     permissions:
       pull-requests: read
     outputs:
@@ -131,6 +132,7 @@ jobs:
     needs: [changes, plugin-fast, plugin-qml]
     if: always()
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - name: Require selected plugin checks
         env:
@@ -197,6 +199,7 @@ jobs:
     needs: [changes, pages]
     if: always()
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - name: Require selected repository checks
         env:
