@@ -1,19 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-default-theme="workspaces" data-theme-storage="multi-monitor-workspaces-site-theme">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Assign separate, non-overlapping workspace banks to every monitor in Omarchy's Hyprland session.">
   <meta name="theme-color" content="#071619">
+  <script>
+    const root = document.documentElement;
+    let requested = null;
+    let saved = null;
+    try { requested = new URLSearchParams(location.search).get("theme"); } catch {}
+    try { saved = root.dataset.themeStorage ? localStorage.getItem(root.dataset.themeStorage) : null; } catch {}
+    const preferred = typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: light)").matches
+      ? "github-light" : root.dataset.defaultTheme;
+    root.dataset.theme = requested || saved || preferred;
+  </script>
   <meta property="og:title" content="Multi-Monitor Workspaces for Omarchy">
   <meta property="og:description" content="Assign a separate workspace bank to every display.">
   <meta property="og:image" content="https://bolens.github.io/omarchy-multi-monitor-workspaces/preview.png">
   <title>Multi-Monitor Workspaces · Omarchy</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="responsive.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="responsive.css"><link rel="stylesheet" href="theme.css">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-  <header><a class="brand" href="#top"><span class="grid-mark" aria-hidden="true"><i>&#8203;</i><i>&#8203;</i><i>&#8203;</i><i>&#8203;</i></span><b>MMW</b><em>Multi-Monitor Workspaces</em></a><nav aria-label="Primary"><a href="#model">Model</a><a href="#features">Features</a><a href="#settings">Settings</a><a class="repo" href="https://github.com/bolens/omarchy-multi-monitor-workspaces">Source ↗</a></nav></header>
+  <header><a class="brand" href="#top"><span class="grid-mark" aria-hidden="true"><i>&#8203;</i><i>&#8203;</i><i>&#8203;</i><i>&#8203;</i></span><b>MMW</b><em>Multi-Monitor Workspaces</em></a><nav aria-label="Primary"><a href="#model">Model</a><a href="#features">Features</a><a href="#settings">Settings</a><a class="repo" href="https://github.com/bolens/omarchy-multi-monitor-workspaces">Source ↗</a><label class="theme-picker"><span>Theme</span><select data-theme-select aria-label="Site color theme"><option value="workspaces">Workspaces</option><option value="tokyo-night">Tokyo Night</option><option value="catppuccin">Catppuccin</option><option value="gruvbox">Gruvbox</option><option value="nord">Nord</option><option value="github-dark">GitHub Dark</option><option value="github-light">GitHub Light</option><option value="catppuccin-latte">Catppuccin Latte</option><option value="solarized-light">Solarized Light</option></select></label></nav></header>
   <main id="main">
     <section class="hero" id="top"><div><p class="kicker">Omarchy × Hyprland · v{{VERSION}}</p><h1>Every display.<br><span>Its own workspace bank.</span></h1><p class="lede">Assign a separate workspace bank to each connected monitor. Bank allocation prevents overlapping IDs and replaces stale monitor state after topology changes.</p><div class="actions"><a class="button solid" href="#install">Install plugin</a><a class="button outline" href="#model">See the mapping</a></div></div><div class="topology" aria-label="Workspace bank diagram"><div class="screen"><label>DP-1 · BANK 0</label><div><b>󱓻</b><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div><svg viewBox="0 0 400 100" aria-hidden="true"><path d="M8 15C90 15 110 85 195 50S310 15 392 15"/><circle cx="8" cy="15" r="5"/><circle cx="392" cy="15" r="5"/></svg><div class="screen screen-b"><label>DP-3 · BANK 1</label><div><b>󱓻</b><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div></div></section>
     <section class="metrics"><div><span>TESTED SCALE</span><b>1 → 100 monitors</b></div><div><span>DEFAULT BANK</span><b>10 workspaces</b></div><div><span>TOPOLOGY OWNER</span><b>1 shared service</b></div></section>
@@ -25,6 +35,6 @@
     <section class="section resources"><div class="heading"><p class="kicker">Reference</p><h2>Allocation, tests, IPC, and security.</h2></div><div class="links"><a href="https://github.com/bolens/omarchy-multi-monitor-workspaces/blob/main/ARCHITECTURE.md"><span>01</span><b>Architecture</b><em>Allocation and ownership →</em></a><a href="https://github.com/bolens/omarchy-multi-monitor-workspaces/blob/main/TESTING.md"><span>02</span><b>Testing</b><em>Model, QML, live, stress →</em></a><a href="https://github.com/bolens/omarchy-multi-monitor-workspaces#ipc"><span>03</span><b>IPC reference</b><em>Commands and diagnostics →</em></a><a href="https://github.com/bolens/omarchy-multi-monitor-workspaces/blob/main/SECURITY.md"><span>04</span><b>Security</b><em>Boundaries and reporting →</em></a></div></section>
   </main>
   <footer><div class="brand"><span class="grid-mark" aria-hidden="true"><i>&#8203;</i><i>&#8203;</i><i>&#8203;</i><i>&#8203;</i></span><b>MMW</b></div><p>Modified hard fork of Omarchy Dual Monitor Workspaces · MIT</p><div><a href="https://github.com/bolens/omarchy-multi-monitor-workspaces">GitHub</a><a href="https://github.com/bolens/omarchy-multi-monitor-workspaces/issues">Issues</a><a href="https://omarchy.org">Omarchy</a></div></footer>
-  <script src="site.js"></script>
+  <script src="theme.js"></script><script src="site.js"></script>
 </body>
 </html>
