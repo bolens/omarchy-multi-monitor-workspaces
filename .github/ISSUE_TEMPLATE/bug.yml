@@ -1,7 +1,7 @@
 name: Bug report
 description: Report reproducible workspace-widget behavior.
 title: "[Bug]: "
-labels: [bug]
+labels: [bug, needs-triage]
 body:
   - type: checkboxes
     id: checks
