@@ -1,4 +1,5 @@
 const assert=require("node:assert/strict"),fs=require("node:fs")
+const cssBlock=(source,marker)=>{const start=source.indexOf(marker);assert.notEqual(start,-1,`missing ${marker}`);const open=source.indexOf("{",start);let depth=0;for(let i=open;i<source.length;i++){if(source[i]==="{")depth++;else if(source[i]==="}"&&--depth===0)return source.slice(open+1,i)}assert.fail(`unclosed ${marker}`)}
 assert.ok(fs.statSync("scripts/build-site.sh").mode&0o100,"site builder must remain executable")
 const html=fs.readFileSync("docs/index.html","utf8"),css=fs.readFileSync("docs/styles.css","utf8"),responsive=fs.readFileSync("docs/responsive.css","utf8")
 for(const id of ["main","model","features","settings","install"]) assert.ok(html.includes(`id="${id}"`),`missing section ${id}`)
@@ -6,8 +7,9 @@ for(const asset of ["styles.css","responsive.css","site.js","favicon.svg","previ
 for(const term of ["1 → 100 monitors","Atomic topology","per-workspace glyph","Race-safe persistence"]) assert.match(html,new RegExp(term,"i"))
 assert.match(html,/\{\{VERSION\}\}/); assert.match(html,/class="skip"/); assert.match(css,/prefers-reduced-motion/)
 assert.match(css,/#55e6dd/i); assert.match(css,/#ff775f/i)
-assert.match(responsive,/grid-template-columns:\s*minmax\(0, 1fr\)/)
-assert.match(responsive,/\.install > \*[\s\S]*?min-width:\s*0/)
+const mobileCss=cssBlock(responsive,"@media (max-width: 820px)")
+assert.match(mobileCss,/grid-template-columns:\s*minmax\(0, 1fr\)/)
+assert.match(mobileCss,/\.install > \*\s*\{\s*min-width:\s*0/)
 const channel=v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4}
 const luminance=hex=>{const rgb=hex.match(/[\da-f]{2}/gi).map(v=>channel(parseInt(v,16)));return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2]}
 const contrast=(a,b)=>(Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05)
