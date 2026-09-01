@@ -8,6 +8,8 @@ const button = read("Button.qml"), widgetButton = read("WidgetButton.qml")
 const capture = read("scripts/capture-screenshots"), live = read("scripts/verify-live")
 const qmlRuntimeRunner = read("tests/run_qml_runtime.sh")
 const testRunner = read("tests/run_all.sh")
+assert.match(testRunner, /QMLLINT:-\/usr\/lib\/qt6\/bin\/qmllint/,
+  "local linting must prefer the current Qt 6 qmllint")
 assert.match(qmlRuntimeRunner, /"\$quickshell_bin" list --all/,
   "runtime leak detection must use the resolved quickshell or qs executable")
 assert.doesNotMatch(qmlRuntimeRunner, /(?:^|\n)\s*quickshell list --all/,
