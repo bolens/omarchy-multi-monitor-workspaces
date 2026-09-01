@@ -5,6 +5,11 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Delegate `pull-requests: read` to the reusable validation workflow so
+  future tag-triggered releases can start after CI path filtering was introduced.
+
 ## [2.2.4] - 2026-09-01
 
 ### Fixed

@@ -16,6 +16,7 @@ jobs:
     permissions:
       contents: read
       checks: write
+      pull-requests: read
   release:
     needs: validate
     runs-on: ubuntu-24.04
