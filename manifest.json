@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.bolens.multi-monitor-workspaces",
   "name": "Multi-Monitor Workspaces",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "author": "bolens",
   "license": "MIT",
   "description": "Deterministic per-monitor workspace banks with configurable labels, appearance, navigation, settings, and IPC.",
