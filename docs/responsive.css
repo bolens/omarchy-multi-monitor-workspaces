@@ -1,0 +1,21 @@
+.install p {
+  color: #5f1e13;
+}
+
+@media (max-width: 820px) {
+  .hero,
+  .model,
+  .settings,
+  .code-grid,
+  .install {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero > *,
+  .model > *,
+  .settings > *,
+  .code-grid > *,
+  .install > * {
+    min-width: 0;
+  }
+}
