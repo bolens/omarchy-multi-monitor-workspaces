@@ -31,4 +31,7 @@ assert.ok(installKicker&&coral&&contrast(installKicker,coral)>=4.5,"install kick
 assert.ok(installCopy&&coral&&contrast(installCopy,coral)>=4.5,"install copy must meet WCAG AA contrast")
 const image=fs.readFileSync("preview.png"); assert.equal(image.subarray(1,4).toString(),"PNG")
 assert.equal((html.match(/<h1/g)||[]).length,1); assert.equal((html.match(/data-copy/g)||[]).length,1)
+assert.match(html, /value="system"/); assert.match(html, /value="time"/);
+assert.match(themeJs, /new Date\(\)\.getHours\(\)/); assert.match(themeJs, /addEventListener\?\.\("change"/);
+assert.match(themeJs, /return darkTheme/, "no-preference fallback must remain dark");
 console.log("Multi-Monitor Workspaces Pages structure passed")
