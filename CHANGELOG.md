@@ -5,6 +5,10 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Pages code examples use theme-aware shell syntax highlighting without changing copied commands.
+
 ## [2.2.8] - 2026-09-01
 
 ### Security
