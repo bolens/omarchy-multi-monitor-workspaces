@@ -9,7 +9,9 @@ Releases use Semantic Versioning and annotated `vX.Y.Z` tags on `main`.
    section and update comparison links.
 4. Run `MMW_QML_TESTS=never npm test`, then the live and stress validation from
    [TESTING.md](TESTING.md) on an Omarchy workstation.
-5. Open a pull request and require CI to pass before merging.
+5. Open a pull request, require CI and review conversations to pass, then
+   squash-merge it and delete the branch. Never push directly to `main` or
+   bypass protection.
 6. Tag the validated `main` commit as `vX.Y.Z`. The release workflow verifies
    the tag and publishes a checksummed, provenance-attested source archive.
 
