@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
@@ -41,7 +42,7 @@ Item {
     anchors.fill: parent
     spacing: Style.space(8)
     Text { Layout.fillWidth:true; text:"Multi-Monitor Workspaces"; textFormat:Text.PlainText; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.title; font.bold:true }
-    Text { Layout.fillWidth:true; text:"" + controller.screenName + " uses bank " + (controller.monitorBankIndex + 1) + ". Settings apply to every monitor.";
+    Text { Layout.fillWidth:true; text:"" + root.controller.screenName + " uses bank " + (root.controller.monitorBankIndex + 1) + ". Settings apply to every monitor.";
       textFormat:Text.PlainText; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall; wrapMode:Text.WordWrap }
     RowLayout {
       Layout.fillWidth:true; spacing:Style.space(6)
@@ -76,7 +77,7 @@ Item {
                 Text { text:"Workspace labels"; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
                 Text { Layout.fillWidth:true; text:"Local numbers, global IDs, or state glyphs."; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
               }
-              Controls.ComboBox { model:["number","hybrid","global","glyph"]; currentIndex:root.enumIndex(model,root.values.labelMode); onActivated:root.patch("labelMode",model[index]) }
+              Controls.ComboBox { model:["number","hybrid","global","glyph"]; currentIndex:root.enumIndex(model,root.values.labelMode); onActivated:(index) => root.patch("labelMode",model[index]) }
             }
             RowLayout {
               Layout.fillWidth:true
@@ -84,7 +85,7 @@ Item {
                 Text { text:"Primary click"; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
                 Text { Layout.fillWidth:true; text:"Focus a workspace or move the active window there."; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
               }
-              Controls.ComboBox { model:["focus","move","move-silent"]; currentIndex:root.enumIndex(model,root.values.clickAction); onActivated:root.patch("clickAction",model[index]) }
+              Controls.ComboBox { model:["focus","move","move-silent"]; currentIndex:root.enumIndex(model,root.values.clickAction); onActivated:(index) => root.patch("clickAction",model[index]) }
             }
             Controls.CheckBox { text:"Show empty workspaces"; checked:root.values.showEmpty; onToggled:root.patch("showEmpty",checked) }
             Controls.CheckBox { text:"Wrap wheel navigation at bank edges"; checked:root.values.wrapScroll; onToggled:root.patch("wrapScroll",checked) }
@@ -101,14 +102,15 @@ Item {
                 return root.service.monitorNames()
               }
               RowLayout {
+                id: monitorRow
                 required property string modelData
                 Layout.fillWidth:true
                 ColumnLayout { Layout.fillWidth:true; spacing:1
-                  Text { text:modelData; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
-                  Text { Layout.fillWidth:true; text:"First workspace " + (root.service.workspaceIdsFor(modelData)[0]); color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
+                  Text { text:monitorRow.modelData; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
+                  Text { Layout.fillWidth:true; text:"First workspace " + (root.service.workspaceIdsFor(monitorRow.modelData)[0]); color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
                 }
                 Text { text:"Bank"; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption }
-                Controls.SpinBox { from:0; to:99; value:Math.floor((root.service.workspaceIdsFor(modelData)[0]-1)/root.values.count); onValueModified:root.setMonitorBank(modelData,value) }
+                Controls.SpinBox { from:0; to:99; value:Math.floor((root.service.workspaceIdsFor(monitorRow.modelData)[0]-1)/root.values.count); onValueModified:root.setMonitorBank(monitorRow.modelData,value) }
               }
             }
           }
@@ -135,26 +137,27 @@ Item {
               Repeater {
                 model:root.controller.bankWorkspaceIds
                 RowLayout {
+                  id: glyphRow
                   required property int modelData
                   Layout.fillWidth:true
                   Layout.minimumHeight:Style.space(36)
                   spacing:Style.space(5)
                   Text {
                     Layout.fillWidth:true
-                    text:"Workspace " + modelData
+                    text:"Workspace " + glyphRow.modelData
                     color:Color.popups.text
                     font.family:Style.font.family
                     font.pixelSize:Style.font.caption
                     elide:Text.ElideRight
                   }
                   Controls.TextField {
-                    objectName:"workspaceGlyphEditor-"+modelData
+                    objectName:"workspaceGlyphEditor-"+glyphRow.modelData
                     Layout.preferredWidth:Style.space(72)
-                    Accessible.name:"Glyph for workspace " + modelData
-                    text:root.values.workspaceGlyphs[String(modelData)] || ""
+                    Accessible.name:"Glyph for workspace " + glyphRow.modelData
+                    text:root.values.workspaceGlyphs[String(glyphRow.modelData)] || ""
                     placeholderText:"Default"
                     maximumLength:8
-                    onEditingFinished:root.setWorkspaceGlyph(modelData,text)
+                    onEditingFinished:root.setWorkspaceGlyph(glyphRow.modelData,text)
                   }
                 }
               }
@@ -166,11 +169,11 @@ Item {
             RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Vertical padding"; color:Color.popups.text; font.family:Style.font.family }
               Controls.SpinBox { from:0; to:16; value:root.values.verticalPadding; onValueModified:root.patch("verticalPadding",value) } }
             RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Active color"; color:Color.popups.text; font.family:Style.font.family }
-              Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.activeColorRole); onActivated:root.patch("activeColorRole",model[index]) } }
+              Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.activeColorRole); onActivated:(index) => root.patch("activeColorRole",model[index]) } }
             RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Occupied color"; color:Color.popups.text; font.family:Style.font.family }
-              Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.occupiedColorRole); onActivated:root.patch("occupiedColorRole",model[index]) } }
+              Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.occupiedColorRole); onActivated:(index) => root.patch("occupiedColorRole",model[index]) } }
             RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Empty color"; color:Color.popups.text; font.family:Style.font.family }
-              Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.emptyColorRole); onActivated:root.patch("emptyColorRole",model[index]) } }
+              Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.emptyColorRole); onActivated:(index) => root.patch("emptyColorRole",model[index]) } }
             Text { Layout.fillWidth:true; text:"Opacity"; color:Color.popups.text; font.family:Style.font.family; font.bold:true }
             RowLayout { Layout.fillWidth:true; Text { text:"Active"; color:Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
               Controls.Slider { Layout.fillWidth:true; from:.45; to:1; stepSize:.05; value:root.values.activeOpacity; onMoved:root.patch("activeOpacity",value) }

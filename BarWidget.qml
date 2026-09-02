@@ -1,6 +1,6 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell.Hyprland
 import qs.Commons
@@ -135,7 +135,10 @@ BarWidget {
     contentWidth: fittedContentWidth(Style.space(430))
     contentHeight: fittedContentHeight(settingsContent.implicitHeight, Style.space(620))
     onOpenChanged: if (!open) root.settingsOpen = false
+    // Quickshell injects plugin-local SettingsPanel metadata at runtime.
+    // qmllint disable unqualified
     SettingsPanel { id: settingsContent; anchors.fill: parent; controller: root }
+    // qmllint enable unqualified
   }
   Component.onCompleted: { Hyprland.refreshMonitors(); Hyprland.refreshWorkspaces(); syncRegistration() }
   Component.onDestruction: if (registeredService) registeredService.unregisterWidget(registeredScreenName, root, registeredGeneration)

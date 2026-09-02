@@ -72,7 +72,7 @@ assert.match(model, /Object\.keys\(value\)\.sort\(\)/, "monitor override seriali
 assert.match(settings, /Flickable[\s\S]*ScrollBar\.vertical/, "the complete settings surface must remain reachable")
 assert.match(settings, /wrapMode:Text\.WordWrap/g, "helper text must wrap inside visual bounds")
 assert.match(settings, /implicitHeight:\s*Style\.space\(560\)/, "settings geometry must be deterministic")
-assert.match(settings, /workspaceIdsFor\(modelData\)\[0\]/, "monitor editors must display the effective bank after priority and collision resolution")
+assert.match(settings, /workspaceIdsFor\(monitorRow\.modelData\)\[0\]/, "monitor editors must display the effective bank after priority and collision resolution")
 assert.match(settings, /function setWorkspaceGlyph\(workspaceId, value\)/, "settings must update one global workspace glyph without replacing its peers")
 assert.match(settings, /model:root\.controller\.bankWorkspaceIds/, "glyph editors must target the panel monitor's global workspace bank")
 assert.match(qmlRuntimeRunner, /leaked_runtime_processes\(\)/,
