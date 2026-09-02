@@ -4,10 +4,11 @@ local first_monitor = "DP-1"
 local second_monitor = "DP-2"
 local workspace_count = 5
 
--- Install the matching release branch first, for example:
---   git clone --branch release/0.56.x --single-branch \
---     https://github.com/zjeffer/split-monitor-workspaces.git \
+-- Install the reviewed upstream snapshot first, for example:
+--   git clone https://github.com/zjeffer/split-monitor-workspaces.git \
 --     ~/.config/hypr/plugins/split-monitor-workspaces
+--   git -C ~/.config/hypr/plugins/split-monitor-workspaces \
+--     checkout --detach 656ac1f024f0c1d6ec007f4c25cbc02951d51c9c
 local hypr_config_dir = (os.getenv("HOME") or "") .. "/.config/hypr"
 package.path = package.path
   .. ";" .. hypr_config_dir .. "/?.lua"

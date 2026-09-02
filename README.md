@@ -34,6 +34,21 @@ omarchy bar move io.github.bolens.multi-monitor-workspaces --section left --afte
 
 The local repository retains upstream history and its remote so a GitHub fork can be attached later. The active hard-fork identity is `io.github.bolens.multi-monitor-workspaces`.
 
+## Remove
+
+```sh
+omarchy bar remove io.github.bolens.multi-monitor-workspaces
+omarchy plugin remove io.github.bolens.multi-monitor-workspaces
+omarchy plugin enable omarchy.workspaces
+```
+
+## Requirements and dependencies
+
+- Omarchy Quattro 4.0 or newer with bar-widget and service plugin support.
+- The standard Omarchy shell and Hyprland workspace model.
+
+The plugin installs no external packages, services, accounts, or network dependencies.
+
 ## Settings
 
 Right-click any workspace entry to open settings. The scrollable panel controls

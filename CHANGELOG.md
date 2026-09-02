@@ -5,6 +5,14 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Security
+
+- Pin the optional split-monitor workspace example to a reviewed upstream commit.
+
+### Fixed
+
+- Document plugin removal, stock workspace restoration, and runtime requirements.
+
 ## [2.2.7] - 2026-09-01
 
 ### Added
