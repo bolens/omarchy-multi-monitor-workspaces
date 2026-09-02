@@ -5,6 +5,8 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.2.8] - 2026-09-01
+
 ### Security
 
 - Pin the optional split-monitor workspace example to a reviewed upstream commit.
@@ -80,7 +82,8 @@ project follows [Semantic Versioning](https://semver.org/).
 - Centralize settings, topology, allocation, and IPC ownership in one service.
 - Preserve the hybrid active-glyph and occupied/empty number presentation.
 
-[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.7...HEAD
+[Unreleased]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.8...HEAD
+[2.2.8]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.7...v2.2.8
 [2.2.7]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.6...v2.2.7
 [2.2.6]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.5...v2.2.6
 [2.2.5]: https://github.com/bolens/omarchy-multi-monitor-workspaces/compare/v2.2.4...v2.2.5
