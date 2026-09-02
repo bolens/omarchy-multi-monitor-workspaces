@@ -3,9 +3,12 @@ const dimensions=(file,label=file)=>{const data=fs.readFileSync(file);assert.ok(
 const cssBlock=(source,marker)=>{const start=source.indexOf(marker);assert.notEqual(start,-1,`missing ${marker}`);const open=source.indexOf("{",start);let depth=0;for(let i=open;i<source.length;i++){if(source[i]==="{")depth++;else if(source[i]==="}"&&--depth===0)return source.slice(open+1,i)}assert.fail(`unclosed ${marker}`)}
 assert.ok(fs.statSync("scripts/build-site.sh").mode&0o100,"site builder must remain executable")
 const html=fs.readFileSync("docs/index.html","utf8"),css=fs.readFileSync("docs/styles.css","utf8"),responsive=fs.readFileSync("docs/responsive.css","utf8"),themeCss=fs.readFileSync("docs/theme.css","utf8"),themeJs=fs.readFileSync("docs/theme.js","utf8")
+const syntaxCss=fs.readFileSync("docs/syntax-highlight.css","utf8"),syntaxJs=fs.readFileSync("docs/syntax-highlight.js","utf8")
 const notFound=fs.readFileSync("docs/404.html","utf8")
 for(const id of ["main","model","features","settings","install"]) assert.ok(html.includes(`id="${id}"`),`missing section ${id}`)
-for(const asset of ["styles.css","responsive.css","theme.css","theme.js","site.js","favicon.svg","apple-touch-icon.png","site.webmanifest","social-card.png","preview.png"]) assert.ok(html.includes(asset),`missing asset ${asset}`)
+for(const asset of ["styles.css","responsive.css","theme.css","theme.js","site.js","syntax-highlight.css","syntax-highlight.js","favicon.svg","apple-touch-icon.png","site.webmanifest","social-card.png","preview.png"]) assert.ok(html.includes(asset),`missing asset ${asset}`)
+for(const token of ["sh-command","sh-option","sh-string","sh-variable","sh-operator","sh-comment"]) assert.ok(syntaxCss.includes(token),"syntax palette must define " + token)
+assert.match(syntaxJs,/createTextNode/);assert.match(syntaxJs,/replaceChildren/);assert.doesNotMatch(syntaxJs,/innerHTML/)
 for(const contract of ["canonical","og:type","og:url","og:site_name","og:title","og:description","og:image","og:image:width","og:image:height","og:image:alt","twitter:card","twitter:title","twitter:description","twitter:image","twitter:image:alt"]) assert.ok(html.includes(contract),`missing metadata ${contract}`)
 assert.deepEqual(dimensions("docs/social-card.png","social card"),[1200,630])
 for(const theme of ["github-light","catppuccin-latte","solarized-light"]) assert.ok(html.includes(`value="${theme}"`),`missing ${theme} option`)
