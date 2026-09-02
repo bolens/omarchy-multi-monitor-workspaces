@@ -1,0 +1,4 @@
+.topology-route { animation: topology-route 5.4s linear infinite; }
+.topology .workspace-packet { fill: var(--cyan); stroke: var(--bg); stroke-width: 3; filter: drop-shadow(0 0 7px var(--cyan)); }
+@keyframes topology-route { to { stroke-dashoffset: -55; } }
+@media (prefers-reduced-motion: reduce) { .topology-route { animation: none; } .workspace-packet { display: none; } }
