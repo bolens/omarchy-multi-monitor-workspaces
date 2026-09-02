@@ -1,0 +1,8 @@
+@media (orientation: landscape) and (max-height: 560px) {
+  .hero { min-height: auto; padding-block: 1.25rem; gap: 1.5rem; }
+  .hero h1 { font-size: clamp(2.75rem, 7vw, 3.5rem); }
+  .lede { margin-block: 0.65rem; }
+  .actions { margin-top: 0.65rem; }
+  .topology { align-self: start; padding: 1rem; }
+  .metrics div { padding-block: 1rem; }
+}
