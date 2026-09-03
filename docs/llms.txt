@@ -1,0 +1,13 @@
+# Omarchy Multi-Monitor Workspaces
+
+Omarchy Multi-Monitor Workspaces manages predictable Hyprland workspace placement across multiple displays. The site covers installation, behavior, and configuration.
+
+## Documentation
+
+- Overview: https://bolens.github.io/omarchy-multi-monitor-workspaces/
+- Changelog: https://bolens.github.io/omarchy-multi-monitor-workspaces/changelog/
+
+## Source
+
+- Repository: https://github.com/bolens/omarchy-multi-monitor-workspaces
+- Issues: https://github.com/bolens/omarchy-multi-monitor-workspaces/issues
