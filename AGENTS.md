@@ -1,5 +1,9 @@
 # Agent guidance
 
+Before Spec Kit planning or implementation, read
+`.specify/memory/project-guide.md` with the project constitution. It maps
+requirements to this repository's source, acceptance evidence, and validation.
+
 Read `.specify/memory/constitution.md`, `ARCHITECTURE.md`, `TESTING.md`, and `CONTRIBUTING.md` when present.
 
 - Use stable monitor identity; do not rely on transient connector enumeration or object order.
