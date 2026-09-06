@@ -1,5 +1,7 @@
 # omarchy-multi-monitor-workspaces Spec Kit project guide
 
+[Documentation](../../DOCUMENTATION.md)
+
 A stock-shell workspace plugin with stable monitor identity, deterministic bank
 allocation, and owned persistence.
 

@@ -1,5 +1,7 @@
 # Architecture
 
+[Documentation](DOCUMENTATION.md)
+
 `Model.js` owns pure sanitization, stable monitor-to-bank mapping, workspace numbering, navigation, labels, and legacy migration. It has no QML or host dependencies.
 
 `Service.qml` is the sole mutable owner, monitor-topology authority, workspace-bank allocator, and IPC endpoint. It losslessly coalesces settings writes, keeps failed writes retryable, and registers one current presentation per monitor with monotonically increasing generations so stale QML destruction cannot remove replacements. A separate topology serial invalidates every presentation atomically on both attach and detach. Its revision floor comes from the current inline `shell.shellConfig` entry, so reconstruction cannot accept an older presentation snapshot.

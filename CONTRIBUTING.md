@@ -1,5 +1,7 @@
 # Contributing
 
+[Documentation](DOCUMENTATION.md)
+
 Keep changes focused, deterministic, and compatible with Omarchy Shell.
 
 For behavior or architecture changes, review the relevant contract in
