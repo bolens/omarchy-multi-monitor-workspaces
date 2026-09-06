@@ -30,3 +30,8 @@ license in [LICENSE](LICENSE) while existing upstream notices remain intact.
 ## Reproducible tools
 
 See the [development environment guide](docs/development-environments.md) for devenv and local Docker, Podman, or Apple container validation.
+
+## Devcontainer
+
+See [the devcontainer guide](.devcontainer/README.md) for the repository toolchain,
+setup, checks and platform limits.
