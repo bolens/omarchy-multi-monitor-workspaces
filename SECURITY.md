@@ -1,5 +1,7 @@
 # Security
 
+[Documentation](DOCUMENTATION.md)
+
 ## Supported version
 
 Security fixes are provided for the latest release on the `main` branch.

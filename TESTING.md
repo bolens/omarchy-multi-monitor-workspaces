@@ -1,5 +1,7 @@
 # Testing
 
+[Documentation](DOCUMENTATION.md)
+
 Run `npm test`. On a live Wayland session, the command launches short-lived,
 path-specific QML harnesses. It then verifies that the persistent Quickshell
 inventory did not change. Set `MMW_QML_TESTS=never` for static checks or

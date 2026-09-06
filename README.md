@@ -1,5 +1,7 @@
 # Multi-Monitor Workspaces for Omarchy
 
+[Documentation](DOCUMENTATION.md)
+
 A hard fork of `derluke/omarchy-dual-monitor-workspaces` with deterministic
 workspace banks for any number of monitors. It keeps the existing Omarchy bar
 UI and adds guarded settings persistence, per-monitor routing, appearance

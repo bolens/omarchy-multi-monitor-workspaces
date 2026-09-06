@@ -1,5 +1,7 @@
 # Release playbook
 
+[Documentation](DOCUMENTATION.md)
+
 Releases use Semantic Versioning and signed annotated `vX.Y.Z` tags on `main`.
 
 ## Prepare and validate
