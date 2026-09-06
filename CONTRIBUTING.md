@@ -24,3 +24,7 @@ secrets, private paths, personal monitor names, or unrelated logs.
 
 By contributing, you agree that your contribution is licensed under the MIT
 license in [LICENSE](LICENSE) while existing upstream notices remain intact.
+
+## Reproducible tools
+
+See the [development environment guide](docs/development-environments.md) for devenv and local Docker, Podman, or Apple container validation.

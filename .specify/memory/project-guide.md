@@ -31,10 +31,10 @@ changes.
 ## Validation and operational limits
 
 ```sh
-MMW_QML_TESTS=never npm test
+bash tests/run_all.sh --portable
 ```
 
-The portable suite does not prove live compositor behavior. Use TESTING.md for
+Portable mode covers model and contract tests without desktop dependencies. The full `npm test` gate also requires Qt and Omarchy plugin validation. The portable suite does not prove live compositor behavior. Use TESTING.md for
 explicitly authorized QML, live, stress, and screenshot checks. Never rearrange
 workspaces or modify the persistent shell during routine repository checks.
 
