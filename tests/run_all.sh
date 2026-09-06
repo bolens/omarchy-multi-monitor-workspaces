@@ -19,13 +19,9 @@ persistent_shell_inventory() {
     }
   ' | sort
 }
-node tests/model.test.js
-node tests/property.test.js
-node tests/manifest.test.js
-node tests/contracts.test.js
-node tests/release.test.js
-node tests/site.test.js
-node tests/fleet_hardening.test.js
+for test_file in tests/*.test.js; do
+  node "$test_file"
+done
 omarchy_path=${OMARCHY_PATH:-/home/panda/.local/share/omarchy-overlay}
 qmllint_bin=${QMLLINT:-/usr/lib/qt6/bin/qmllint}
 [[ -x "$qmllint_bin" ]] || { printf 'Qt 6 qmllint not found: %s\n' "$qmllint_bin" >&2; exit 1; }
