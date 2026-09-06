@@ -91,3 +91,8 @@ Quickshell process inventory does not change.
 ## Credits and license
 
 This is a modified hard fork of [Omarchy Dual Monitor Workspaces](https://github.com/derluke/omarchy-dual-monitor-workspaces), originally created by Lukas Innig and derived from Omarchy's workspace widget by 37signals LLC. Hard-fork architecture and expanded behavior are by bolens. The upstream notices are preserved under the MIT license in [LICENSE](LICENSE); see [NOTICE](NOTICE) for provenance.
+
+## License scope and attribution
+
+See [third-party notices](THIRD_PARTY_NOTICES.md) for the project license scope,
+retained upstream notices, and dependency or asset exceptions.
