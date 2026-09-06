@@ -6,3 +6,8 @@ npm-debug.log*
 *.tar.gz
 *.tar.gz.sha256
 *.orig
+
+# Local tooling and runtime artifacts
+__pycache__/
+*.py[cod]
+.ruff_cache/
