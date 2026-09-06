@@ -2,9 +2,9 @@
 
 Keep changes focused, deterministic, and compatible with Omarchy Shell.
 
-Before opening a pull request, review [ARCHITECTURE.md](ARCHITECTURE.md), update
-tests for behavior changes, and run the validation documented in
-[TESTING.md](TESTING.md). Use an issue first for substantial interface,
+For behavior or architecture changes, review the relevant contract in
+[ARCHITECTURE.md](ARCHITECTURE.md) and update affected tests. Before opening a
+pull request, run the applicable validation from [TESTING.md](TESTING.md). Use an issue first for substantial interface,
 persistence, security, or compatibility changes.
 
 ```sh
