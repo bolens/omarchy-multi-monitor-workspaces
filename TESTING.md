@@ -43,3 +43,7 @@ The script captures number, hybrid, and glyph modes on every attached monitor.
 It also captures the top and bottom of the selected monitor's settings panel.
 The exit trap restores the exact settings object and the prior open panel. The
 script fails if restoration or Quickshell process identity changes.
+
+## Portable development gate
+
+Run `bash tests/run_all.sh --portable` for deterministic Node and container-adapter tests without a desktop installation. This explicit mode reports the omitted Qt, plugin archive, and QML runtime checks. The default `npm test` gate retains those checks. Live topology, IPC, and stress verification remain explicit host operations.
