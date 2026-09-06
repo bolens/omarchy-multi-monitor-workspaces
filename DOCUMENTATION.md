@@ -48,3 +48,5 @@ runtime proof. A topic without an implementation stays explicitly unimplemented.
 - [RELEASING.md](RELEASING.md): versioning and release procedure
 - [SUPPORT.md](SUPPORT.md): public and private report routing
 - [NOTICE](NOTICE): upstream provenance and retained notices
+
+- [Editor setup](.vscode/README.md)
