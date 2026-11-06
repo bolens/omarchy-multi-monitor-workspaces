@@ -1,5 +1,8 @@
 const assert = require("node:assert/strict")
 const fs = require("node:fs")
+const os = require("node:os")
+const path = require("node:path")
+const { execFileSync } = require("node:child_process")
 
 const read = path => fs.readFileSync(path, "utf8")
 const ci = read(".github/workflows/ci.yml")
@@ -31,9 +34,9 @@ assert.match(ci, /repository:\s*\$\{\{\s*github\.event_name\s*!=\s*'pull_request
 assert.equal((ci.match(/CHANGES_RESULT:\s*\$\{\{ needs\.changes\.result \}\}/g) || []).length, 2)
 assert.equal((ci.match(/\[\[ "\$CHANGES_RESULT" == success \]\]/g) || []).length, 2)
 assert.equal((ci.match(/\[\[ "\$SELECTED" == true \|\| "\$SELECTED" == false \]\]/g) || []).length, 2)
-assert.match(ci, /plugin-result:[\s\S]*name: Plugin[\s\S]*if: always\(\)/)
+assert.match(ci, /plugin-result:[\s\S]*name: Plugin[\s\S]*if: always\(\) && inputs\.release_validation/)
 assert.match(ci, /repository-result:[\s\S]*name: Repository[\s\S]*if: always\(\)/)
-assert.match(ci, /actions\/setup-node@820762786026740c76f36085b0efc47a31fe5020/)
+assert.match(ci, /actions\/setup-node@[a-f0-9]{40}(?:\s|$)/)
 assert.match(ci, /shellcheck/)
 assert.match(ci, /lycheeverse\/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8/)
 assert.match(ci, /--exclude-path '[^']*node_modules/)
@@ -79,8 +82,18 @@ assert.match(release, /actions\/attest-build-provenance@4d101475d8b20a2381f78447
 assert.match(release, /id-token:\s*write/)
 assert.match(release, /attestations:\s*write/)
 assert.match(release, /validate:[\s\S]*?checks:\s*write/)
+assert.match(ci, /workflow_call:\n    inputs:\n      release_validation:[\s\S]*?type: boolean\n        default: true/,
+  "existing reusable callers must retain hosted plugin validation by default")
+for (const job of ["plugin-fast", "plugin-qml"]) {
+  const block = ci.match(new RegExp(`^  ${job}:\\n[\\s\\S]*?(?=^  \\S)`, "m"))
+  assert.ok(block, `missing hosted release validation job: ${job}`)
+  assert.match(block[0], /if: inputs\.release_validation && needs\.changes\.outputs\.plugin == 'true'/,
+    "ordinary PR/main validation must be native; reusable releases remain explicit")
+}
 const releaseValidateJob = release.match(/^  validate:\n[\s\S]*?(?=^  \S)/m)
 assert.ok(releaseValidateJob, "release workflow must define the reusable validate job")
+assert.match(releaseValidateJob[0], /uses: \.\/\.github\/workflows\/ci\.yml\n    with:\n      release_validation: true/,
+  "signed releases must explicitly keep the full hosted plugin validation gate")
 assert.match(releaseValidateJob[0], /^    permissions:\n(?:(?:      .+)\n)*?      pull-requests:\s*read$/m)
 assert.match(release, /concurrency:[\s\S]*cancel-in-progress:\s*false/)
 assert.doesNotMatch(release, /runs-on:\s*ubuntu-latest/)
@@ -99,3 +112,26 @@ assert.match(capture, /--report/)
 assert.doesNotMatch(capture, /quickshell\s+(kill|--kill)|qs\s+kill/)
 
 console.log("Fleet hardening contracts passed")
+
+// A graphical workstation must not silently turn an ordinary push into a live test.
+const hookSandbox = fs.mkdtempSync(path.join(os.tmpdir(), "mmw-push-hook-"))
+try {
+  const stubs = {
+    git: 'printf "%s\\n" "$HOOK_TEST_ROOT"',
+    npm: 'if [ "$1" = test ]; then printf "%s\\n" "${MMW_QML_TESTS-}"; fi',
+    python3: ':',
+    actionlint: ':',
+    zizmor: ':',
+  }
+  for (const [name, body] of Object.entries(stubs))
+    fs.writeFileSync(path.join(hookSandbox, name), `#!/bin/sh\n${body}\n`, { mode: 0o755 })
+  const env = { ...process.env, PATH: `${hookSandbox}:${process.env.PATH}`, HOOK_TEST_ROOT: process.cwd() }
+  delete env.MMW_QML_TESTS
+  const runHook = overrides => execFileSync("bash", [".githooks/pre-push"], {
+    env: { ...env, ...overrides }, encoding: "utf8",
+  }).trim()
+  assert.equal(runHook({}), "never", "ordinary pushes must not auto-detect a live compositor")
+  assert.equal(runHook({ MMW_QML_TESTS: "always" }), "always", "explicit owned graphical checks remain available")
+} finally {
+  fs.rmSync(hookSandbox, { recursive: true, force: true })
+}
