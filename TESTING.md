@@ -49,3 +49,18 @@ script fails if restoration or Quickshell process identity changes.
 ## Portable development gate
 
 Run `bash tests/run_all.sh --portable` for deterministic Node and container-adapter tests without a desktop installation. This explicit mode reports the omitted Qt, plugin archive, and QML runtime checks. The default `npm test` gate retains those checks. Live topology, IPC, and stress verification remain explicit host operations.
+
+## Woodpecker plugin validation
+
+[Woodpecker](https://woodpecker.bolens.dev/repos) runs the plugin archive,
+ShellCheck, behavior and QML lint checks on pull requests and pushes to `main`.
+It uses the same immutable Omarchy toolchain image and v4.0.1 imports as
+GitHub CI. The entry point is `bash scripts/woodpecker-plugin.sh` inside that
+image. It requires network access only to fetch the pinned public imports
+and any lockfile-based test dependencies; it receives no publishing secrets.
+
+GitHub checks remain during the protected-check transition. Repository links,
+HTML/XML, browser accessibility, workflow security, compatibility canaries,
+macOS, development-image builds, Pages, and signed release publication retain
+their existing GitHub workflows. Native plugin success does not replace those
+checks or prove live desktop behavior. No version or release is created by CI.
