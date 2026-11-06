@@ -14,6 +14,6 @@
     "verify:stress": "bash scripts/verify-stress"
   },
   "devDependencies": {
-    "lighthouse": "13.4.1"
+    "lighthouse": "13.5.0"
   }
 }
