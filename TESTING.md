@@ -76,3 +76,19 @@ Dockerfile coverage does not discover `.woodpecker/` image references.
 The pre-push hook defaults graphical runtime checks to `never`. Set
 `MMW_QML_TESTS=always` for an explicitly owned graphical check; `npm test`
 retains its documented auto-detection behavior.
+
+## Woodpecker site accessibility
+
+The native `site` workflow builds the existing Pages payload, runs its structure
+tests, then runs `node scripts/audit-site.mjs` in the pinned official
+Puppeteer/Chrome image. It requires an accessibility score exactly 1. The helper
+awaits its own loopback HTTP listener and Chrome DevTools readiness, uses ephemeral
+ports, and closes only its owned browser, profile, and server. It receives no
+secrets or extra host capabilities.
+
+The hosted browser check remains required during adoption. A source review or
+local build does not establish runner success: verify the final-head native site
+pipeline and genuine merged-main run before retiring hosted coverage or changing
+its required checks. Publishing, signed releases, and platform checks keep their
+current workflows. Review the manual browser-image digest pin alongside the
+other native image pins; Dependabot does not update Woodpecker YAML.
