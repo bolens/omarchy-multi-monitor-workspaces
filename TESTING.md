@@ -72,3 +72,7 @@ Editor image changes select a real hosted Docker build and post-create smoke
 under a non-root user with a read-only image and no host Docker socket. Review
 native workflow image pins monthly and after security releases; Dependabot's
 Dockerfile coverage does not discover `.woodpecker/` image references.
+
+The pre-push hook defaults graphical runtime checks to `never`. Set
+`MMW_QML_TESTS=always` for an explicitly owned graphical check; `npm test`
+retains its documented auto-detection behavior.
