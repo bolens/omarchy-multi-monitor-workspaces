@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -35,7 +36,7 @@ class FlatLintTopology(unittest.TestCase):
                 'Path(os.environ["TEST_CONTROLS"]).write_text(json.dumps(sys.argv[1:]))\n')
             record = root / 'command.json'
             fake = root / 'qmllint'
-            fake.write_text('#!/usr/bin/python3\nimport os,json,sys\nfrom pathlib import Path\n'
+            fake.write_text('#!' + sys.executable + '\nimport os,json,sys\nfrom pathlib import Path\n'
                             'Path(os.environ["TEST_RECORD"]).write_text(json.dumps({"cwd":os.getcwd(),"args":sys.argv[1:],"files":sorted(p.name for p in Path.cwd().iterdir())}))\n'
                             'sys.exit(int(os.environ["TEST_STATUS"]))\n')
             fake.chmod(0o700)
