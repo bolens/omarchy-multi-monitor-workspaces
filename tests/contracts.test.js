@@ -9,7 +9,9 @@ const capture = read("scripts/capture-screenshots"), live = read("scripts/verify
 const qmlRuntimeRunner = read("tests/run_qml_runtime.sh")
 const testRunner = read("tests/run_all.sh")
 const qmlModule = read("qmldir"), qmlLintPolicy = read(".qmllint.ini")
-assert.match(testRunner, /QMLLINT:-\/usr\/lib\/qt6\/bin\/qmllint/,
+assert.match(testRunner, /"\$plugin_dir\/scripts\/lint-qml"/,
+  "the normal test runner must invoke the owning QML gate")
+assert.match(read("scripts/lint-qml"), /QMLLINT:-\/usr\/lib\/qt6\/bin\/qmllint/,
   "local linting must prefer the current Qt 6 qmllint")
 assert.match(qmlModule, /^module io\.github\.bolens\.multi_monitor_workspaces$/m)
 assert.match(qmlModule, /^Service 1\.0 Service\.qml$/m)

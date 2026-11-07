@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import qs.Commons
+import qs.Commons as Commons
 import qs.Ui
 
 Item {
@@ -41,9 +42,9 @@ Item {
   ColumnLayout {
     anchors.fill: parent
     spacing: Style.space(8)
-    Text { Layout.fillWidth:true; text:"Multi-Monitor Workspaces"; textFormat:Text.PlainText; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.title; font.bold:true }
+    Text { Layout.fillWidth:true; text:"Multi-Monitor Workspaces"; textFormat:Text.PlainText; color:Commons.Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.title; font.bold:true }
     Text { Layout.fillWidth:true; text:"" + root.controller.screenName + " uses bank " + (root.controller.monitorBankIndex + 1) + ". Settings apply to every monitor.";
-      textFormat:Text.PlainText; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall; wrapMode:Text.WordWrap }
+      textFormat:Text.PlainText; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall; wrapMode:Text.WordWrap }
     RowLayout {
       Layout.fillWidth:true; spacing:Style.space(6)
       Button { id:generalTab; text:"Behavior"; active:root.page === "general"; onClicked:root.page="general" }
@@ -51,14 +52,14 @@ Item {
       Item { Layout.fillWidth:true }
     }
     Rectangle {
-      Layout.fillWidth:true; Layout.fillHeight:true; radius:Style.space(8); color:Qt.lighter(Color.popups.background,1.08); clip:true
+      Layout.fillWidth:true; Layout.fillHeight:true; radius:Style.space(8); color:Qt.lighter(Commons.Color.popups.background,1.08); clip:true
       Flickable {
         id:flick; anchors.fill:parent; anchors.margins:Style.space(10); contentWidth:width; contentHeight:settingsColumn.implicitHeight
         clip:true; boundsBehavior:Flickable.StopAtBounds
         Controls.ScrollBar.vertical: Controls.ScrollBar { policy:Controls.ScrollBar.AsNeeded }
         ColumnLayout {
           id:settingsColumn; width:flick.width; spacing:Style.space(10)
-          Text { Layout.fillWidth:true; text:root.page === "general" ? "Workspace behavior" : "Workspace appearance"; color:Color.popups.text;
+          Text { Layout.fillWidth:true; text:root.page === "general" ? "Workspace behavior" : "Workspace appearance"; color:Commons.Color.popups.text;
             font.family:Style.font.family; font.pixelSize:Style.font.body; font.bold:true }
 
           ColumnLayout {
@@ -66,39 +67,40 @@ Item {
             RowLayout {
               Layout.fillWidth:true
               ColumnLayout { Layout.fillWidth:true; spacing:1
-                Text { text:"Workspaces per monitor"; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
-                Text { Layout.fillWidth:true; text:"Each monitor receives a non-overlapping bank of this size."; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
+                Text { text:"Workspaces per monitor"; color:Commons.Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
+                Text { Layout.fillWidth:true; text:"Each monitor receives a non-overlapping bank of this size."; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
               }
               Controls.SpinBox { from:1; to:20; value:root.values.count; editable:true; onValueModified:root.patch("count",value) }
             }
             RowLayout {
               Layout.fillWidth:true
               ColumnLayout { Layout.fillWidth:true; spacing:1
-                Text { text:"Workspace labels"; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
-                Text { Layout.fillWidth:true; text:"Local numbers, global IDs, or state glyphs."; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
+                Text { text:"Workspace labels"; color:Commons.Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
+                Text { Layout.fillWidth:true; text:"Local numbers, global IDs, or state glyphs."; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
               }
               Controls.ComboBox { model:["number","hybrid","global","glyph"]; currentIndex:root.enumIndex(model,root.values.labelMode); onActivated:(index) => root.patch("labelMode",model[index]) }
             }
             RowLayout {
               Layout.fillWidth:true
               ColumnLayout { Layout.fillWidth:true; spacing:1
-                Text { text:"Primary click"; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
-                Text { Layout.fillWidth:true; text:"Focus a workspace or move the active window there."; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
+                Text { text:"Primary click"; color:Commons.Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
+                Text { Layout.fillWidth:true; text:"Focus a workspace or move the active window there."; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
               }
               Controls.ComboBox { model:["focus","move","move-silent"]; currentIndex:root.enumIndex(model,root.values.clickAction); onActivated:(index) => root.patch("clickAction",model[index]) }
             }
             Controls.CheckBox { text:"Show empty workspaces"; checked:root.values.showEmpty; onToggled:root.patch("showEmpty",checked) }
             Controls.CheckBox { text:"Wrap wheel navigation at bank edges"; checked:root.values.wrapScroll; onToggled:root.patch("wrapScroll",checked) }
             Controls.CheckBox { text:"Show workspace tooltips"; checked:root.values.showTooltips; onToggled:root.patch("showTooltips",checked) }
-            Rectangle { Layout.fillWidth:true; implicitHeight:1; color:Color.muted; opacity:.3 }
-            Text { Layout.fillWidth:true; text:"Monitor mapping"; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall; font.bold:true }
+            Rectangle { Layout.fillWidth:true; implicitHeight:1; color:Commons.Color.muted; opacity:.3 }
+            Text { Layout.fillWidth:true; text:"Monitor mapping"; color:Commons.Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall; font.bold:true }
             Text { Layout.fillWidth:true; text:"Connected monitors are assigned deterministically by explicit overrides, then priority order, then output name. Current: "
                 + (root.service ? root.service.monitorNames().map(function(name){return name+" → "+(root.service.workspaceIdsFor(name)[0])+"–"+root.service.workspaceIdsFor(name).slice(-1)[0]}).join(" · ") : "unavailable");
-              textFormat:Text.PlainText; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
+              textFormat:Text.PlainText; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
             Repeater {
               model: {
                 if (!root.service) return []
-                root.service.topologySerial
+                // Retain the topology notification dependency before reading monitor names.
+                const topologySerial = root.service.topologySerial
                 return root.service.monitorNames()
               }
               RowLayout {
@@ -106,10 +108,10 @@ Item {
                 required property string modelData
                 Layout.fillWidth:true
                 ColumnLayout { Layout.fillWidth:true; spacing:1
-                  Text { text:monitorRow.modelData; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
-                  Text { Layout.fillWidth:true; text:"First workspace " + (root.service.workspaceIdsFor(monitorRow.modelData)[0]); color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
+                  Text { text:monitorRow.modelData; color:Commons.Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
+                  Text { Layout.fillWidth:true; text:"First workspace " + (root.service.workspaceIdsFor(monitorRow.modelData)[0]); color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
                 }
-                Text { text:"Bank"; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption }
+                Text { text:"Bank"; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption }
                 Controls.SpinBox { from:0; to:99; value:Math.floor((root.service.workspaceIdsFor(monitorRow.modelData)[0]-1)/root.values.count); onValueModified:root.setMonitorBank(monitorRow.modelData,value) }
               }
             }
@@ -117,16 +119,16 @@ Item {
 
           ColumnLayout {
             visible:root.page === "appearance"; Layout.fillWidth:true; spacing:Style.space(10)
-            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Active glyph"; color:Color.popups.text; font.family:Style.font.family }
+            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Active glyph"; color:Commons.Color.popups.text; font.family:Style.font.family }
               Controls.TextField { text:root.values.activeGlyph; maximumLength:8; onEditingFinished:root.patch("activeGlyph",text) } }
-            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Occupied glyph"; color:Color.popups.text; font.family:Style.font.family }
+            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Occupied glyph"; color:Commons.Color.popups.text; font.family:Style.font.family }
               Controls.TextField { text:root.values.occupiedGlyph; maximumLength:8; onEditingFinished:root.patch("occupiedGlyph",text) } }
-            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Empty glyph"; color:Color.popups.text; font.family:Style.font.family }
+            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Empty glyph"; color:Commons.Color.popups.text; font.family:Style.font.family }
               Controls.TextField { text:root.values.emptyGlyph; maximumLength:8; onEditingFinished:root.patch("emptyGlyph",text) } }
-            Text { Layout.fillWidth:true; text:"Glyphs are used when Workspace labels is set to glyph."; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
-            Rectangle { Layout.fillWidth:true; implicitHeight:1; color:Color.muted; opacity:.3 }
-            Text { Layout.fillWidth:true; text:"Workspace themes · " + root.controller.screenName; color:Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall; font.bold:true }
-            Text { Layout.fillWidth:true; text:"Optional glyphs use global workspace IDs and override the normal label in every mode. Leave a field empty to use the selected label mode."; color:Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
+            Text { Layout.fillWidth:true; text:"Glyphs are used when Workspace labels is set to glyph."; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
+            Rectangle { Layout.fillWidth:true; implicitHeight:1; color:Commons.Color.muted; opacity:.3 }
+            Text { Layout.fillWidth:true; text:"Workspace themes · " + root.controller.screenName; color:Commons.Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall; font.bold:true }
+            Text { Layout.fillWidth:true; text:"Optional glyphs use global workspace IDs and override the normal label in every mode. Leave a field empty to use the selected label mode."; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
             GridLayout {
               id:workspaceGlyphGrid
               Layout.fillWidth:true
@@ -145,7 +147,7 @@ Item {
                   Text {
                     Layout.fillWidth:true
                     text:"Workspace " + glyphRow.modelData
-                    color:Color.popups.text
+                    color:Commons.Color.popups.text
                     font.family:Style.font.family
                     font.pixelSize:Style.font.caption
                     elide:Text.ElideRight
@@ -162,33 +164,33 @@ Item {
                 }
               }
             }
-            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Button width"; color:Color.popups.text; font.family:Style.font.family }
+            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Button width"; color:Commons.Color.popups.text; font.family:Style.font.family }
               Controls.SpinBox { from:24; to:48; value:root.values.buttonWidth; onValueModified:root.patch("buttonWidth",value) } }
-            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Horizontal margin"; color:Color.popups.text; font.family:Style.font.family }
+            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Horizontal margin"; color:Commons.Color.popups.text; font.family:Style.font.family }
               Controls.SpinBox { from:0; to:20; value:root.values.horizontalMargin; onValueModified:root.patch("horizontalMargin",value) } }
-            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Vertical padding"; color:Color.popups.text; font.family:Style.font.family }
+            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Vertical padding"; color:Commons.Color.popups.text; font.family:Style.font.family }
               Controls.SpinBox { from:0; to:16; value:root.values.verticalPadding; onValueModified:root.patch("verticalPadding",value) } }
-            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Active color"; color:Color.popups.text; font.family:Style.font.family }
+            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Active color"; color:Commons.Color.popups.text; font.family:Style.font.family }
               Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.activeColorRole); onActivated:(index) => root.patch("activeColorRole",model[index]) } }
-            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Occupied color"; color:Color.popups.text; font.family:Style.font.family }
+            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Occupied color"; color:Commons.Color.popups.text; font.family:Style.font.family }
               Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.occupiedColorRole); onActivated:(index) => root.patch("occupiedColorRole",model[index]) } }
-            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Empty color"; color:Color.popups.text; font.family:Style.font.family }
+            RowLayout { Layout.fillWidth:true; Text { Layout.fillWidth:true; text:"Empty color"; color:Commons.Color.popups.text; font.family:Style.font.family }
               Controls.ComboBox { model:["accent","foreground","muted","urgent"]; currentIndex:root.enumIndex(model,root.values.emptyColorRole); onActivated:(index) => root.patch("emptyColorRole",model[index]) } }
-            Text { Layout.fillWidth:true; text:"Opacity"; color:Color.popups.text; font.family:Style.font.family; font.bold:true }
-            RowLayout { Layout.fillWidth:true; Text { text:"Active"; color:Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
+            Text { Layout.fillWidth:true; text:"Opacity"; color:Commons.Color.popups.text; font.family:Style.font.family; font.bold:true }
+            RowLayout { Layout.fillWidth:true; Text { text:"Active"; color:Commons.Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
               Controls.Slider { Layout.fillWidth:true; from:.45; to:1; stepSize:.05; value:root.values.activeOpacity; onMoved:root.patch("activeOpacity",value) }
-              Text { text:Math.round(root.values.activeOpacity*100)+"%"; color:Color.muted; Layout.preferredWidth:Style.space(40) } }
-            RowLayout { Layout.fillWidth:true; Text { text:"Occupied"; color:Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
+              Text { text:Math.round(root.values.activeOpacity*100)+"%"; color:Commons.Color.muted; Layout.preferredWidth:Style.space(40) } }
+            RowLayout { Layout.fillWidth:true; Text { text:"Occupied"; color:Commons.Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
               Controls.Slider { Layout.fillWidth:true; from:.45; to:1; stepSize:.05; value:root.values.occupiedOpacity; onMoved:root.patch("occupiedOpacity",value) }
-              Text { text:Math.round(root.values.occupiedOpacity*100)+"%"; color:Color.muted; Layout.preferredWidth:Style.space(40) } }
-            RowLayout { Layout.fillWidth:true; Text { text:"Empty"; color:Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
+              Text { text:Math.round(root.values.occupiedOpacity*100)+"%"; color:Commons.Color.muted; Layout.preferredWidth:Style.space(40) } }
+            RowLayout { Layout.fillWidth:true; Text { text:"Empty"; color:Commons.Color.popups.text; font.family:Style.font.family; Layout.preferredWidth:Style.space(70) }
               Controls.Slider { Layout.fillWidth:true; from:.45; to:1; stepSize:.05; value:root.values.emptyOpacity; onMoved:root.patch("emptyOpacity",value) }
-              Text { text:Math.round(root.values.emptyOpacity*100)+"%"; color:Color.muted; Layout.preferredWidth:Style.space(40) } }
+              Text { text:Math.round(root.values.emptyOpacity*100)+"%"; color:Commons.Color.muted; Layout.preferredWidth:Style.space(40) } }
           }
         }
       }
     }
-    Text { Layout.fillWidth:true; visible:root.service && root.service.lastError !== ""; text:root.service ? root.service.lastError : ""; color:Color.urgent;
+    Text { Layout.fillWidth:true; visible:root.service && root.service.lastError !== ""; text:root.service ? root.service.lastError : ""; color:Commons.Color.urgent;
       font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
     RowLayout { Layout.fillWidth:true; Item { Layout.fillWidth:true }
       Button { text:"Reset"; onClicked:if(root.service) root.service.resetSettings() }

@@ -25,17 +25,12 @@ persistent_shell_inventory() {
 for test_file in tests/*.test.js; do
   node "$test_file"
 done
-python3 -m unittest discover -s tests -p 'test_development_container.py'
+python3 -m unittest discover -s tests -p 'test_*.py'
 if [[ $portable == true ]]; then
   printf 'Portable validation passed; Qt, plugin archive, and QML runtime checks require the full host gate.\n'
   exit 0
 fi
-omarchy_path=${OMARCHY_PATH:-/home/panda/.local/share/omarchy-overlay}
-qmllint_bin=${QMLLINT:-/usr/lib/qt6/bin/qmllint}
-[[ -x "$qmllint_bin" ]] || { printf 'Qt 6 qmllint not found: %s\n' "$qmllint_bin" >&2; exit 1; }
-"$qmllint_bin" -I "$omarchy_path/shell" -i "$plugin_dir/qmldir" \
-  -i "$omarchy_path/shell/Commons/qmldir" -i "$omarchy_path/shell/Ui/qmldir" \
-  Button.qml WidgetButton.qml BarWidget.qml SettingsPanel.qml Service.qml
+"$plugin_dir/scripts/lint-qml"
 if [[ ${OMARCHY_SKIP_VALIDATE:-0} != 1 ]]; then
   validation_dir=$(mktemp -d)
   trap 'rm -rf -- "$validation_dir"' EXIT

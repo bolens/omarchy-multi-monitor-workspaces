@@ -24,10 +24,10 @@ Item {
     var config=shellConfigSnapshot, layout=config && config.bar ? config.bar.layout : null
     if (!layout) return null
     var sections=["left","center","right"]
-    for (var sectionIndex=0;sectionIndex<sections.length;sectionIndex++) {
-      var entries=layout[sections[sectionIndex]]
+    for (let sectionIndex=0;sectionIndex<sections.length;sectionIndex++) {
+      let entries=layout[sections[sectionIndex]]
       if (!Array.isArray(entries)) continue
-      for (var entryIndex=0;entryIndex<entries.length;entryIndex++)
+      for (let entryIndex=0;entryIndex<entries.length;entryIndex++)
         if (Model.entryId(entries[entryIndex])===Model.PLUGIN_ID) return entries[entryIndex]
     }
     return null
@@ -68,8 +68,8 @@ Item {
     widgetInstances = widgetInstances.filter(function(record) { return record.instance !== instance || record.screen !== key || (expected > 0 && record.generation !== expected) })
     if (widgetInstances.length!==previousLength) topologySerial++
   }
-  function widgetFor(screenName) { var key=String(screenName || "").trim(); for (var index=0; index<widgetInstances.length; index++) if (widgetInstances[index].screen===key) return widgetInstances[index].instance; return null }
-  function isRegisteredInstance(instance) { for (var index=0;index<widgetInstances.length;index++) if (widgetInstances[index].instance===instance) return true; return false }
+  function widgetFor(screenName) { var key=String(screenName || "").trim(); for (let index=0; index<widgetInstances.length; index++) if (widgetInstances[index].screen===key) return widgetInstances[index].instance; return null }
+  function isRegisteredInstance(instance) { for (let index=0;index<widgetInstances.length;index++) if (widgetInstances[index].instance===instance) return true; return false }
   function monitorNames() { return widgetInstances.map(function(record) { return record.screen }).sort() }
   function openSettingsFor(preferred, page) {
     if (preferred && !isRegisteredInstance(preferred)) return fail("settings widget is no longer registered")
@@ -102,11 +102,11 @@ Item {
     var changes=pendingPatch; pendingPatch=null
     try {
       if (!shell || typeof shell.updateEntryInline !== "function") throw new Error("shell settings API unavailable")
-      var stored=shellEntry()
+      let stored=shellEntry()
       if (shellConfigSnapshot!==null && !stored) throw new Error("plugin entry removed before settings commit")
-      var storedRevision=stored ? Model.boundedInteger(stored._multiMonitorWorkspacesRevision,0,0,2147483647) : -1
-      var candidate=Model.mergeSettings(stored || effectiveSettings,changes)
-      var revision=Math.max(appliedRevision+1,storedRevision+1,mutationSerial+1), entry={id:Model.PLUGIN_ID,_multiMonitorWorkspacesSettingsVersion:Model.SETTINGS_VERSION,_multiMonitorWorkspacesRevision:revision}
+      let storedRevision=stored ? Model.boundedInteger(stored._multiMonitorWorkspacesRevision,0,0,2147483647) : -1
+      let candidate=Model.mergeSettings(stored || effectiveSettings,changes)
+      let revision=Math.max(appliedRevision+1,storedRevision+1,mutationSerial+1), entry={id:Model.PLUGIN_ID,_multiMonitorWorkspacesSettingsVersion:Model.SETTINGS_VERSION,_multiMonitorWorkspacesRevision:revision}
       Object.keys(candidate).forEach(function(key){entry[key]=candidate[key]})
       shell.updateEntryInline(Model.PLUGIN_ID,entry); effectiveSettings=candidate; appliedRevision=revision; mutationSerial++; persistenceError=""; return true
     } catch(error) { pendingPatch=Model.mergePatchObjects(changes,pendingPatch || ({})); effectiveSettings=Model.mergeSettings(effectiveSettings,pendingPatch); fail(String(error && error.message ? error.message : error),true); return false }
@@ -115,8 +115,8 @@ Item {
   function workspaceIdsFor(screen) { return Model.workspaceIds(Model.bankIndex(effectiveSettings,screen,monitorNames()),effectiveSettings.count) }
   function allocationObject() {
     var result={}, names=monitorNames()
-    for (var index=0;index<names.length;index++) {
-      var ids=workspaceIdsFor(names[index])
+    for (let index=0;index<names.length;index++) {
+      let ids=workspaceIdsFor(names[index])
       result[names[index]]={bank:ids.length ? Math.floor((ids[0]-1)/effectiveSettings.count) : 0,workspaceIds:ids}
     }
     return result

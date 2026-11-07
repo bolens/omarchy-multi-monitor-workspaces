@@ -9,6 +9,10 @@ project follows [Semantic Versioning](https://semver.org/).
 
 - Pages code examples use theme-aware shell syntax highlighting without changing copied commands.
 
+### Fixed
+
+- Keep plugin colors tied to Omarchy’s palette on Qt 6.12.
+
 ## [2.2.8] - 2026-09-01
 
 ### Security
