@@ -7,6 +7,8 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add native repository policy checks alongside the existing protected GitHub checks.
+
 - Pages code examples use theme-aware shell syntax highlighting without changing copied commands.
 
 ### Fixed
