@@ -4,19 +4,30 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
 import qs.Commons
+import qs.Commons as Commons
 import qs.Ui
 import "Model.js" as Model
+import "BarHostProtocol.js" as HostProtocol
 
 BarWidget {
   id: root
+  BarHostAccess {
+    id: barHost
+    host: root.bar
+    fallbackBarSize: Style.bar.sizeHorizontal
+    fallbackUrgent: Commons.Color.urgent
+    fallbackForeground: Commons.Color.popups.text
+    fallbackBarForeground: Commons.Color.foreground
+  }
+
   moduleName: Model.PLUGIN_ID
   property bool settingsOpen: false
   property var registeredService: null
   property string registeredScreenName: ""
   property int registeredGeneration: 0
-  readonly property var workspaceService: bar && bar.shell && typeof bar.shell.serviceFor === "function" ? bar.shell.serviceFor(moduleName) : null
+  readonly property var workspaceService: barHost.serviceFor(moduleName)
   readonly property var effectiveSettings: workspaceService ? workspaceService.effectiveSettings : Model.sanitizeSettings(settings)
-  readonly property var barScreen: root.QsWindow.window ? root.QsWindow.window.screen : null
+  readonly property var barScreen: HostProtocol.windowScreen(root.QsWindow.window)
   readonly property string screenName: barScreen ? barScreen.name : ""
   readonly property var monitor: barScreen ? Hyprland.monitorFor(barScreen) : null
   readonly property int activeWorkspaceId: monitor && monitor.activeWorkspace ? monitor.activeWorkspace.id : 0
@@ -25,7 +36,7 @@ BarWidget {
   // temporarily assigning overlapping banks to different bar instances.
   readonly property var bankWorkspaceIds: {
     if (workspaceService && screenName) {
-      workspaceService.topologySerial
+      const topologySerial = workspaceService.topologySerial
       return workspaceService.workspaceIdsFor(screenName)
     }
     return Model.workspaceIds(Model.bankIndex(effectiveSettings,screenName,screenName ? [screenName] : []),effectiveSettings.count)
@@ -36,23 +47,22 @@ BarWidget {
 
   function workspaceById(id) {
     var values = Hyprland.workspaces.values
-    for (var index = 0; index < values.length; index++) if (values[index].id === id) return values[index]
+    for (let index = 0; index < values.length; index++) if (values[index].id === id) return values[index]
     return null
   }
   function occupied(id) { var workspace = workspaceById(id); return workspace !== null && workspace.toplevels.values.length > 0 }
   function colorFor(role) {
-    if (role === "accent") return Color.bar.active
-    if (role === "urgent") return bar ? bar.urgent : Color.urgent
-    if (role === "muted") return Color.muted
-    return bar ? bar.barForeground : Color.foreground
+    if (role === "accent") return Commons.Color.bar.active
+    if (role === "urgent") return barHost.urgent
+    if (role === "muted") return Commons.Color.muted
+    return barHost.barForeground
   }
   function actionFor(id, action) {
     if (!bar || id <= 0) return false
     var command = action === "move" ? "hl.dsp.move({ workspace = \"" + id + "\" })"
       : (action === "move-silent" ? "hl.dsp.move({ workspace = \"" + id + "\", silent = true })"
       : "hl.dsp.focus({ workspace = \"" + id + "\" })")
-    bar.run("hyprctl dispatch " + Util.shellQuote(command))
-    return true
+    return barHost.run("hyprctl dispatch " + Util.shellQuote(command))
   }
   function focusRelative(delta) {
     var target = Model.scrollTarget(activeWorkspaceId, delta, bankWorkspaceIds, effectiveSettings.wrapScroll)
@@ -135,10 +145,7 @@ BarWidget {
     contentWidth: fittedContentWidth(Style.space(430))
     contentHeight: fittedContentHeight(settingsContent.implicitHeight, Style.space(620))
     onOpenChanged: if (!open) root.settingsOpen = false
-    // Quickshell injects plugin-local SettingsPanel metadata at runtime.
-    // qmllint disable unqualified
     SettingsPanel { id: settingsContent; anchors.fill: parent; controller: root }
-    // qmllint enable unqualified
   }
   Component.onCompleted: { Hyprland.refreshMonitors(); Hyprland.refreshWorkspaces(); syncRegistration() }
   Component.onDestruction: if (registeredService) registeredService.unregisterWidget(registeredScreenName, root, registeredGeneration)

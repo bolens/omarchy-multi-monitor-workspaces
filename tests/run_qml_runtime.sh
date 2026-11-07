@@ -35,6 +35,11 @@ ln -s -- "$shell_root/Commons" "$runtime_dir/Commons"
 ln -s -- "$shell_root/Ui" "$runtime_dir/Ui"
 run_test() {
   local file=$1 marker=$2 output status leaks
+  if [[ $file == RuntimeIpcTransportTest.qml ]]; then
+    python3 "$plugin_dir/scripts/run-qml-ipc-harness.py" --repository mmw \
+      --harness "$runtime_dir/$file" --quickshell "$quickshell_bin"
+    return
+  fi
   active_harness="$runtime_dir/$file"; set +e; output=$(timeout 8 "$quickshell_bin" --no-color --path "$active_harness" 2>&1); status=$?; set -e
   "$quickshell_bin" kill --path "$active_harness" --any-display >/dev/null 2>&1 || true; active_harness=""
   leaks=$(wait_for_runtime_teardown || true)
@@ -43,6 +48,8 @@ run_test() {
   grep -q "$marker" <<<"$output" || { printf '%s\n' "$output" >&2; return 1; }
   ! grep -Eq 'Binding loop|TypeError:|ReferenceError:|Cannot assign|Unable to assign' <<<"$output" || { printf '%s\n' "$output" >&2; return 1; }
 }
+run_test RuntimeIpcTransportTest.qml MMW_QML_IPC_TRANSPORT_OK
+run_test RuntimePaletteContractTest.qml PALETTE_QML_CONTRACT_OK
 run_test RuntimeModelTest.qml MMW_QML_MODEL_OK
 run_test RuntimeServiceTest.qml MMW_QML_SERVICE_OK
 run_test RuntimeSettingsTest.qml MMW_QML_SETTINGS_OK
