@@ -11,6 +11,8 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Keep Pages deployments tied to the current workflow attempt and wait for uploaded artifact metadata.
+
 - Preserve settings and revision authority with scoped host snapshots and retain pending edits when the host rejects a save.
 - Use the current Hyprland window-move dispatch for workspace actions.
 
