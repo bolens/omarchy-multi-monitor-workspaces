@@ -7,6 +7,15 @@ project follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Follow Omarchy’s native workspace banks with an opt-in setting while retaining custom bank sizes by default.
+
+### Fixed
+
+- Preserve settings and revision authority with scoped host snapshots and retain pending edits when the host rejects a save.
+- Use the current Hyprland window-move dispatch for workspace actions.
+
+### Added
+
 - Add native repository policy checks alongside the existing protected GitHub checks.
 
 - Pages code examples use theme-aware shell syntax highlighting without changing copied commands.

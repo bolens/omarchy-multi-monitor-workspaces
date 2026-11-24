@@ -65,7 +65,7 @@
     "mmw/RuntimeServiceTest.qml": {
       "source_files": {
         "tests/qml/RuntimeServiceTest.qml": "b1a41c67a37c263e977da51b002e2026e277d42006d62ba41777300ec4c5a270",
-        "Service.qml": "7740455622673c141672efec7b6ddb4650a5432bd2840db543ab38f0f42652b2"
+        "Service.qml": "7ebca2837846fbb8f6c40b735179b83d57db6f313f1b2d9a6c7189e9117abca2"
       },
       "caller_evidence": [
         "service.openSettingsFor(staleWidget,\"general\")",
@@ -106,6 +106,19 @@
       ],
       "expected_exact_warning_lines": {
         "WARN scene: @tests/fixtures/does-not-exist.qml[-1:-1]: File not found": 1
+      }
+    },
+    "mmw/RuntimeScopedSettingsTest.qml": {
+      "source_files": {
+        "tests/qml/RuntimeScopedSettingsTest.qml": "db658c3e904956d8f8f8e59f692636a6789d35968a5c07c505b5405ca999057f",
+        "Service.qml": "7ebca2837846fbb8f6c40b735179b83d57db6f313f1b2d9a6c7189e9117abca2"
+      },
+      "caller_evidence": [
+        "scopedHost.rejectWrites = true",
+        "service.updateSettings({count: 13})"
+      ],
+      "expected_qml_messages": {
+        "Multi-Monitor Workspaces: host rejected the workspace settings write": 1
       }
     }
   }

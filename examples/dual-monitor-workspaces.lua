@@ -1,4 +1,7 @@
 -- Opt-in example for ~/.config/hypr/bindings.lua.
+-- On Omarchy builds with native per-monitor shortcuts, use the default
+-- bindings and enable "Follow Omarchy workspace assignments" in the bar.
+-- This example is for older builds or explicit two-display bindings.
 -- Review and replace these with names from `hyprctl monitors`.
 local first_monitor = "DP-1"
 local second_monitor = "DP-2"

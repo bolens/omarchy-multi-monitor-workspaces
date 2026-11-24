@@ -202,7 +202,7 @@ class Contracts(unittest.TestCase):
     def test_catalog_does_not_allow_privacy_spawn_warning(self):
         catalog=json.loads((HERE/'qml-runtime-warnings.json').read_text())
         self.assertFalse(any(key.startswith('privacy/') for key in catalog['cases']))
-        self.assertEqual(Counter(key.split('/')[0] for key in catalog['cases']), {'app':4,'mmw':1,'p2p':1})
+        self.assertEqual(Counter(key.split('/')[0] for key in catalog['cases']), {'app':4,'mmw':2,'p2p':1})
 
     def test_real_protocol_registry_requires_sync_and_all_globals(self):
         def string(value):

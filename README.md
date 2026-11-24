@@ -63,6 +63,17 @@ Settings are sanitized, bounded, losslessly coalesced for 75 ms, and persisted t
 
 Persistence failures remain visible and keep service health degraded even if unrelated IPC succeeds. Same-screen widget replacement closes the displaced panel before the new presentation becomes authoritative.
 
+## Omarchy workspace shortcuts
+
+On Omarchy builds with native per-monitor workspaces, enable **Follow Omarchy
+workspace assignments** in the widget settings. The bar follows the same
+ten-slot bank as Omarchy's workspace keys for each physical display, even if
+the display moves to another GPU or connector. Use Omarchy's default numbered
+bindings for switching, moving, and moving silently. If you installed the
+older split-monitor-workspaces binding example, remove its setup and key
+overrides to restore the default bindings. Manual banks remain available for
+older Omarchy builds or custom Hyprland rules.
+
 ## IPC
 
 The service target is `multi-monitor-workspaces`:

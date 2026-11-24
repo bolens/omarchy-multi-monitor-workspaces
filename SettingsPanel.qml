@@ -70,7 +70,8 @@ Item {
                 Text { text:"Workspaces per monitor"; color:Commons.Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall }
                 Text { Layout.fillWidth:true; text:"Each monitor receives a non-overlapping bank of this size."; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
               }
-              Controls.SpinBox { from:1; to:20; value:root.values.count; editable:true; onValueModified:root.patch("count",value) }
+              Controls.SpinBox { from:1; to:20; value:root.values.followOmarchy ? 10 : root.values.count; editable:true;
+                enabled:!root.values.followOmarchy; onValueModified:root.patch("count",value) }
             }
             RowLayout {
               Layout.fillWidth:true
@@ -93,7 +94,11 @@ Item {
             Controls.CheckBox { text:"Show workspace tooltips"; checked:root.values.showTooltips; onToggled:root.patch("showTooltips",checked) }
             Rectangle { Layout.fillWidth:true; implicitHeight:1; color:Commons.Color.muted; opacity:.3 }
             Text { Layout.fillWidth:true; text:"Monitor mapping"; color:Commons.Color.popups.text; font.family:Style.font.family; font.pixelSize:Style.font.bodySmall; font.bold:true }
-            Text { Layout.fillWidth:true; text:"Connected monitors are assigned deterministically by explicit overrides, then priority order, then output name. Current: "
+            Controls.CheckBox { text:"Follow Omarchy workspace assignments"; checked:root.values.followOmarchy === true;
+              onToggled:root.patch("followOmarchy",checked) }
+            Text { Layout.fillWidth:true; text:(root.values.followOmarchy
+                ? "Omarchy assigns ten workspaces per physical display. Current: "
+                : "Connected monitors are assigned deterministically by explicit overrides, then priority order, then output name. Current: ")
                 + (root.service ? root.service.monitorNames().map(function(name){return name+" → "+(root.service.workspaceIdsFor(name)[0])+"–"+root.service.workspaceIdsFor(name).slice(-1)[0]}).join(" · ") : "unavailable");
               textFormat:Text.PlainText; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
             Repeater {
@@ -112,7 +117,8 @@ Item {
                   Text { Layout.fillWidth:true; text:"First workspace " + (root.service.workspaceIdsFor(monitorRow.modelData)[0]); color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption; wrapMode:Text.WordWrap }
                 }
                 Text { text:"Bank"; color:Commons.Color.muted; font.family:Style.font.family; font.pixelSize:Style.font.caption }
-                Controls.SpinBox { from:0; to:99; value:Math.floor((root.service.workspaceIdsFor(monitorRow.modelData)[0]-1)/root.values.count); onValueModified:root.setMonitorBank(monitorRow.modelData,value) }
+                Controls.SpinBox { from:0; to:99; value:Math.floor((root.service.workspaceIdsFor(monitorRow.modelData)[0]-1)/(root.values.followOmarchy ? 10 : root.values.count));
+                  enabled:!root.values.followOmarchy; onValueModified:root.setMonitorBank(monitorRow.modelData,value) }
               }
             }
           }

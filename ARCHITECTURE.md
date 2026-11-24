@@ -13,3 +13,5 @@ Persistence and request failures have separate lifetimes. Successful IPC cannot 
 `BarWidget.qml` is a monitor-local projection. It reads workspace activity from Hyprland but obtains its bank from the service's shared registered-monitor snapshot, renders that bank, performs actions through the stock bar runner, and owns one settings panel. It never owns IPC or global allocation policy.
 
 `SettingsPanel.qml` is a bounded, fully scrollable editor. All helper text wraps within the content width and mutations go through the service.
+
+The settings snapshot accepts both legacy full-shell configuration and the scoped public `barConfig` API. Explicit rejection from the own-entry update API is a persistence failure: the revision is not advanced and pending edits remain retryable. Native workspace banks remain opt-in so existing custom counts and mappings retain their behavior.

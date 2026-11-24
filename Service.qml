@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import Quickshell
 import Quickshell.Io
 import "Model.js" as Model
 
@@ -8,6 +9,8 @@ Item {
   property var shell: null
   property var settings: ({})
   property var effectiveSettings: Model.sanitizeSettings(settings)
+  readonly property int workspaceCount: Model.workspaceCount(effectiveSettings)
+  property var nativeBanks: ({})
   property var widgetInstances: []
   property int registrationSerial: 0
   property int topologySerial: 0
@@ -19,7 +22,8 @@ Item {
   property int appliedRevision: -1
   readonly property int settingsVersion: Model.SETTINGS_VERSION
   readonly property int ipcVersion: 1
-  readonly property var shellConfigSnapshot: shell && shell.shellConfig ? shell.shellConfig : null
+  readonly property var shellConfigSnapshot: !shell ? null
+    : ("shellConfig" in shell ? shell.shellConfig : ("barConfig" in shell ? {bar:shell.barConfig} : null))
   function shellEntry() {
     var config=shellConfigSnapshot, layout=config && config.bar ? config.bar.layout : null
     if (!layout) return null
@@ -108,16 +112,36 @@ Item {
       let candidate=Model.mergeSettings(stored || effectiveSettings,changes)
       let revision=Math.max(appliedRevision+1,storedRevision+1,mutationSerial+1), entry={id:Model.PLUGIN_ID,_multiMonitorWorkspacesSettingsVersion:Model.SETTINGS_VERSION,_multiMonitorWorkspacesRevision:revision}
       Object.keys(candidate).forEach(function(key){entry[key]=candidate[key]})
-      shell.updateEntryInline(Model.PLUGIN_ID,entry); effectiveSettings=candidate; appliedRevision=revision; mutationSerial++; persistenceError=""; return true
+      if (shell.updateEntryInline(Model.PLUGIN_ID,entry) === false) throw new Error("host rejected the workspace settings write")
+      effectiveSettings=candidate; appliedRevision=revision; mutationSerial++; persistenceError=""; return true
     } catch(error) { pendingPatch=Model.mergePatchObjects(changes,pendingPatch || ({})); effectiveSettings=Model.mergeSettings(effectiveSettings,pendingPatch); fail(String(error && error.message ? error.message : error),true); return false }
   }
   function resetSettings() { return updateSettings(Model.DEFAULTS) }
-  function workspaceIdsFor(screen) { return Model.workspaceIds(Model.bankIndex(effectiveSettings,screen,monitorNames()),effectiveSettings.count) }
+  function readNativeBanks(contents) {
+    nativeBanks=Model.omarchyBanks(contents)
+    topologySerial++
+  }
+  function hasNativeBank(screen) {
+    return effectiveSettings.followOmarchy && Object.prototype.hasOwnProperty.call(nativeBanks,screen)
+  }
+  function workspaceIdsFor(screen) {
+    return Model.workspaceIds(Model.bankIndex(effectiveSettings,screen,monitorNames(),nativeBanks),workspaceCount)
+  }
+  FileView {
+    path: root.effectiveSettings.followOmarchy
+      ? (Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state") + "/omarchy/monitors/workspaces"
+      : ""
+    watchChanges: root.effectiveSettings.followOmarchy
+    printErrors: false
+    onFileChanged: reload()
+    onLoaded: root.readNativeBanks(text())
+    onLoadFailed: root.readNativeBanks("")
+  }
   function allocationObject() {
     var result={}, names=monitorNames()
     for (let index=0;index<names.length;index++) {
       let ids=workspaceIdsFor(names[index])
-      result[names[index]]={bank:ids.length ? Math.floor((ids[0]-1)/effectiveSettings.count) : 0,workspaceIds:ids}
+      result[names[index]]={bank:ids.length ? Math.floor((ids[0]-1)/workspaceCount) : 0,workspaceIds:ids}
     }
     return result
   }

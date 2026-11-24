@@ -33,8 +33,12 @@ find "$plugin_dir" -maxdepth 1 -type f \( -name '*.qml' -o -name '*.js' \) -exec
 find "$plugin_dir/tests/qml" -type f -name 'Runtime*Test.qml' -exec ln -s -- '{}' "$runtime_dir/" \;
 ln -s -- "$shell_root/Commons" "$runtime_dir/Commons"
 ln -s -- "$shell_root/Ui" "$runtime_dir/Ui"
+requested_harness=${QML_RUNTIME_HARNESS:-}
+ran_harness=0
 run_test() {
   local file=$1 marker=$2 output status leaks
+  if [[ -n $requested_harness && $file != "$requested_harness" ]]; then return 0; fi
+  ran_harness=1
   if [[ $file == RuntimeIpcTransportTest.qml ]]; then
     python3 "$plugin_dir/scripts/run-qml-ipc-harness.py" --repository mmw \
       --harness "$runtime_dir/$file" --quickshell "$quickshell_bin"
@@ -52,7 +56,13 @@ run_test RuntimeIpcTransportTest.qml MMW_QML_IPC_TRANSPORT_OK
 run_test RuntimePaletteContractTest.qml PALETTE_QML_CONTRACT_OK
 run_test RuntimeModelTest.qml MMW_QML_MODEL_OK
 run_test RuntimeServiceTest.qml MMW_QML_SERVICE_OK
+run_test RuntimeScopedSettingsTest.qml MMW_QML_SCOPED_SETTINGS_OK
 run_test RuntimeSettingsTest.qml MMW_QML_SETTINGS_OK
 run_test RuntimeAccessibilityTest.qml MMW_QML_ACCESSIBILITY_OK
 runtime_leaks=$(leaked_runtime_processes || true)
 [[ -z $runtime_leaks ]] || { printf 'Leaked Quickshell runtime harnesses:\n%s\n' "$runtime_leaks" >&2; exit 1; }
+
+if [[ -n $requested_harness && $ran_harness != 1 ]]; then
+  printf "Unknown QML runtime harness: %s\n" "$requested_harness" >&2
+  exit 2
+fi
