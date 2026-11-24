@@ -55,7 +55,7 @@ assert.match(service, /property string persistenceError:/, "persistence failures
 assert.match(service, /property string requestError:/, "request failures must not share persistence state")
 assert.match(service, /healthy:persistenceError===""&&requestError===""/, "health must retain unresolved persistence failures")
 assert.match(service, /revision < appliedRevision/, "stale presentation settings must not overwrite a committed revision")
-assert.match(service, /shellConfigSnapshot:[^\n]*shell\.shellConfig[\s\S]*function shellEntry\(\)/, "revision authority must survive service reconstruction in shell config")
+assert.match(service, /shellConfigSnapshot:[\s\S]*shell\.shellConfig[\s\S]*shell\.barConfig[\s\S]*function shellEntry\(\)/, "revision authority must survive service reconstruction in shell config")
 assert.match(widget, /workspaceService\.configure\(settings, true\)/, "bar-entry settings must seed the keep-loaded service")
 assert.doesNotMatch(widget, /IpcHandler/, "per-monitor presentations must not race for the IPC endpoint")
 assert.match(widget, /workspaceService\.workspaceIdsFor\(screenName\)/,

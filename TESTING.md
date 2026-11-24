@@ -204,3 +204,5 @@ Workflow filenames own status identity; descriptive kebab-case step names group
 checks within each workflow. The new repository group publishes no artifacts or
 releases. Existing plugin/site status aliases and separate GitHub release/Pages
 authorities stay unchanged. Run local commands from the repository root.
+
+Use `QML_RUNTIME_HARNESS=RuntimeScopedSettingsTest.qml tests/run_qml_runtime.sh` for the scoped-host save/rejection check. An unknown harness fails instead of reporting an empty pass. The default runner continues to execute every registered harness.

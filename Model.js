@@ -3,11 +3,11 @@
 var PLUGIN_ID = "io.github.bolens.multi-monitor-workspaces"
 var LEGACY_IDS = ["io.github.derluke.dual-monitor-workspaces"]
 var SETTINGS_VERSION = 1
-var SETTING_KEYS = ["count","monitorPriority","monitorBanks","labelMode","activeGlyph","occupiedGlyph","emptyGlyph","workspaceGlyphs",
+var SETTING_KEYS = ["count","monitorPriority","monitorBanks","followOmarchy","labelMode","activeGlyph","occupiedGlyph","emptyGlyph","workspaceGlyphs",
   "showEmpty","showTooltips","wrapScroll","clickAction","activeOpacity","occupiedOpacity","emptyOpacity","buttonWidth","horizontalMargin",
   "verticalPadding","activeColorRole","occupiedColorRole","emptyColorRole"]
 var DEFAULTS = {
-  count: 10, monitorPriority: [], monitorBanks: {}, labelMode: "number",
+  count: 10, monitorPriority: [], monitorBanks: {}, followOmarchy: false, labelMode: "number",
   activeGlyph: "󱓻", occupiedGlyph: "●", emptyGlyph: "○", workspaceGlyphs: {},
   showEmpty: true, showTooltips: true, wrapScroll: true, clickAction: "focus",
   activeOpacity: 1, occupiedOpacity: 0.82, emptyOpacity: 0.45,
@@ -106,6 +106,7 @@ function sanitizeSettings(value) {
     count: boundedInteger(source.count, DEFAULTS.count, 1, 20),
     monitorPriority: uniqueMonitorNames(source.monitorPriority),
     monitorBanks: monitorBankMap(source.monitorBanks),
+    followOmarchy: source.followOmarchy === true,
     labelMode: enumValue(source.labelMode, ["number", "global", "glyph", "hybrid"], DEFAULTS.labelMode),
     activeGlyph: glyph(source.activeGlyph, DEFAULTS.activeGlyph),
     occupiedGlyph: glyph(source.occupiedGlyph, DEFAULTS.occupiedGlyph),
@@ -127,7 +128,19 @@ function sanitizeSettings(value) {
   }
 }
 function sortedMonitorNames(value) { return uniqueNames(value,100).sort() }
-function assignedBankMap(settings, connectedNames) {
+function omarchyBanks(text) {
+  var result={}, used={}
+  String(text || "").split(/\r?\n/).forEach(function(line) {
+    var fields=line.split("\t"), name=fields[1], bank=Number(fields[0])
+    if (fields.length<3 || !name || !fields[2] || !/^\d+$/.test(fields[0])
+        || bank>99 || used[bank] || name in result) return
+    result[name]=bank
+    used[bank]=true
+  })
+  return result
+}
+function workspaceCount(settings) { return settings.followOmarchy ? 10 : settings.count }
+function assignedBankMap(settings, connectedNames, nativeBanks) {
   var clean=sanitizeSettings(settings), connected=sortedMonitorNames(connectedNames), order=[]
   for (var priorityIndex=0; priorityIndex<clean.monitorPriority.length; priorityIndex++) {
     var priorityName=clean.monitorPriority[priorityIndex]
@@ -136,8 +149,19 @@ function assignedBankMap(settings, connectedNames) {
   for (var connectedIndex=0; connectedIndex<connected.length; connectedIndex++)
     if (order.indexOf(connected[connectedIndex])<0) order.push(connected[connectedIndex])
   var result={}, used={}
+  if (clean.followOmarchy && nativeBanks) {
+    for (var nativeIndex=0; nativeIndex<connected.length; nativeIndex++) {
+      var connector=connected[nativeIndex]
+      if (!Object.prototype.hasOwnProperty.call(nativeBanks,connector)) continue
+      var bank=nativeBanks[connector]
+      result[connector]=bank
+      used[bank]=true
+    }
+  }
   for (var index=0; index<order.length; index++) {
-    var name=order[index], desired=Object.prototype.hasOwnProperty.call(clean.monitorBanks,name)
+    var name=order[index]
+    if (Object.prototype.hasOwnProperty.call(result,name)) continue
+    var desired=Object.prototype.hasOwnProperty.call(clean.monitorBanks,name)
       ? clean.monitorBanks[name] : clean.monitorPriority.indexOf(name)
     if (desired<0) desired=index
     if (used[desired]===true) { desired=0; while (used[desired]===true) desired++ }
@@ -145,9 +169,9 @@ function assignedBankMap(settings, connectedNames) {
   }
   return result
 }
-function bankIndex(settings, screenName, connectedNames) {
+function bankIndex(settings, screenName, connectedNames, nativeBanks) {
   var name = String(screenName || "").trim()
-  var assignments=assignedBankMap(settings,connectedNames)
+  var assignments=assignedBankMap(settings,connectedNames,nativeBanks)
   if (Object.prototype.hasOwnProperty.call(assignments,name)) return assignments[name]
   var clean=sanitizeSettings(settings)
   if (Object.prototype.hasOwnProperty.call(clean.monitorBanks,name)) return clean.monitorBanks[name]

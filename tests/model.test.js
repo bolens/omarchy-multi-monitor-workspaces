@@ -69,6 +69,22 @@ assert.deepEqual(JSON.parse(JSON.stringify(model.assignedBankMap(defaults,["HOTP
   "reattach order changed the same connected-set allocation")
 assert.equal(model.bankIndex({monitorPriority:["DP-1","DP-3"]},"DP-1",["HDMI-A-1","DP-1","DP-3"]),0,
   "attaching an unlisted monitor displaced an explicit priority bank")
+const nativeSettings = {followOmarchy:true,count:5,monitorPriority:["DP-3","DP-1"],monitorBanks:{"DP-4":0}}
+const wiredToMotherboard = model.omarchyBanks("0\tDP-1\tDell\n1\tDP-4\tASUS\n2\t\tDisconnected\n3\tHDMI-A-1\tThird display\n")
+assert.equal(model.workspaceCount(nativeSettings), 10)
+assert.equal(model.workspaceCount({count:5}), 5)
+assert.equal(model.bankIndex(nativeSettings,"DP-4",["DP-4"],wiredToMotherboard), 1,
+  "the motherboard display must keep its bank when the other GPU disappears")
+assert.equal(model.bankIndex(nativeSettings,"DP-3",["DP-3","DP-1"],
+  model.omarchyBanks("0\tDP-1\tDell\n1\tDP-3\tASUS\n")), 1, "replugging the same display must retain its native bank")
+assert.deepEqual(JSON.parse(JSON.stringify(model.assignedBankMap(nativeSettings,
+  ["HDMI-A-1","DP-4","DP-1","eDP-1"],wiredToMotherboard))),
+  {"DP-1":0,"DP-4":1,"HDMI-A-1":3,"eDP-1":2}, "unmapped outputs cannot steal a native bank")
+assert.equal(model.bankIndex({monitorPriority:["DP-3","DP-1"]},"DP-1",["DP-1","DP-3"],
+  model.omarchyBanks("0\tDP-1\tDell\n1\tDP-3\tASUS\n")), 1, "manual assignments stay authoritative by default")
+assert.deepEqual(JSON.parse(JSON.stringify(model.omarchyBanks("0\tDP-1\tDell\n0\tDP-2\tDuplicate bank\n"
+  + "2\tDP-1\tDuplicate connector\n-1\tDP-3\tInvalid\n9.5\tDP-4\tInvalid\n4\t__proto__\tInvalid\n"))),
+  {"DP-1":0})
 assert.deepEqual(Array.from(model.workspaceIds(1, 5)), [6, 7, 8, 9, 10])
 assert.equal(model.localNumber(10, 1, 5), 5)
 assert.equal(model.labelFor(10, 5, "number", false, false, defaults), "5")

@@ -27,6 +27,7 @@ BarWidget {
   property int registeredGeneration: 0
   readonly property var workspaceService: barHost.serviceFor(moduleName)
   readonly property var effectiveSettings: workspaceService ? workspaceService.effectiveSettings : Model.sanitizeSettings(settings)
+  readonly property int workspaceCount: Model.workspaceCount(effectiveSettings)
   readonly property var barScreen: HostProtocol.windowScreen(root.QsWindow.window)
   readonly property string screenName: barScreen ? barScreen.name : ""
   readonly property var monitor: barScreen ? Hyprland.monitorFor(barScreen) : null
@@ -39,10 +40,10 @@ BarWidget {
       const topologySerial = workspaceService.topologySerial
       return workspaceService.workspaceIdsFor(screenName)
     }
-    return Model.workspaceIds(Model.bankIndex(effectiveSettings,screenName,screenName ? [screenName] : []),effectiveSettings.count)
+    return Model.workspaceIds(Model.bankIndex(effectiveSettings,screenName,screenName ? [screenName] : []),workspaceCount)
   }
   readonly property int monitorBankIndex: bankWorkspaceIds.length
-    ? Math.floor((bankWorkspaceIds[0]-1)/effectiveSettings.count) : 0
+    ? Math.floor((bankWorkspaceIds[0]-1)/workspaceCount) : 0
   readonly property real trailingGap: root.vertical ? 0 : Style.spaceReal(1.5)
 
   function workspaceById(id) {
@@ -59,9 +60,13 @@ BarWidget {
   }
   function actionFor(id, action) {
     if (!bar || id <= 0) return false
-    var command = action === "move" ? "hl.dsp.move({ workspace = \"" + id + "\" })"
-      : (action === "move-silent" ? "hl.dsp.move({ workspace = \"" + id + "\", silent = true })"
-      : "hl.dsp.focus({ workspace = \"" + id + "\" })")
+    var command
+    if (action === "move" || action === "move-silent")
+      command = "hl.dsp.window.move({ workspace = \"" + id + "\", follow = " + (action === "move") + " })"
+    else if (workspaceService && workspaceService.hasNativeBank(screenName))
+      command = "o.workspaces.focus(" + Model.localNumber(id, monitorBankIndex, workspaceCount) + ", " + JSON.stringify(screenName) + ")"
+    else
+      command = "hl.dsp.focus({ workspace = \"" + id + "\" })"
     return barHost.run("hyprctl dispatch " + Util.shellQuote(command))
   }
   function focusRelative(delta) {
@@ -75,7 +80,7 @@ BarWidget {
     return bankWorkspaceIds.map(function(id) {
       var workspace=workspaceById(id), active=root.activeWorkspaceId===id || (workspace!==null && workspace.active===true)
       return {id:id,monitorActive:root.activeWorkspaceId===id,workspaceActive:workspace!==null ? workspace.active : null,
-        active:active,label:Model.labelFor(id,Model.localNumber(id,root.monitorBankIndex,root.effectiveSettings.count),root.effectiveSettings.labelMode,active,root.occupied(id),root.effectiveSettings)}
+        active:active,label:Model.labelFor(id,Model.localNumber(id,root.monitorBankIndex,root.workspaceCount),root.effectiveSettings.labelMode,active,root.occupied(id),root.effectiveSettings)}
     })
   }
   function settingsStatus() { return {open:settingsOpen && settingsPanel.visible, requestedOpen:settingsOpen,
@@ -113,7 +118,7 @@ BarWidget {
         readonly property var workspace: root.workspaceById(modelData)
         readonly property bool workspaceOccupied: workspace !== null && workspace.toplevels.values.length > 0
         readonly property bool workspaceActive: root.activeWorkspaceId === modelData || (workspace !== null && workspace.active === true)
-        readonly property int localNumber: Model.localNumber(modelData, root.monitorBankIndex, root.effectiveSettings.count)
+        readonly property int localNumber: Model.localNumber(modelData, root.monitorBankIndex, root.workspaceCount)
         bar: root.bar
         visible: root.effectiveSettings.showEmpty || workspaceOccupied || workspaceActive
         text: Model.labelFor(modelData, localNumber, root.effectiveSettings.labelMode, workspaceActive, workspaceOccupied, root.effectiveSettings)
