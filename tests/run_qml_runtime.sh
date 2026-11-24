@@ -66,4 +66,3 @@ if [[ -n $requested_harness && $ran_harness != 1 ]]; then
   printf "Unknown QML runtime harness: %s\n" "$requested_harness" >&2
   exit 2
 fi
-exit 0
